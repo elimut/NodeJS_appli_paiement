@@ -848,4 +848,179 @@ Gère les demandes entrantes.
 
 Express = **middleware**. Une demande entrante est automatiquement dirigée à travers plusieurs fonctions, par express.js
 
+Middleware est un concept de base de NodeJS, on peut l'utiliser après avoir construit l'objet.
+
+    const http = require("http");
+    // import module http intégré dans NodeJs
+
+    const express = require("express");
+    const app = express();
+    // create app d'express, exécution de la fonction apportée par express , cela initialise un nouvel objet. Gestionnaire de requêtes
+    // creation objet app pour utiliser express avant de créer le serveur
+    app.use((req, res, next) => {});
+    // utiliser une méthode forunie par express, permet d'ajouter une nouvelle fonction middleware. La fonction sera exécutée à chaque demande entrante et elle reçoit 3 args
+    // next fonction transmise à la fonction par express: permet à la demande de passer au middleware svt
+    const server = http.createServer(app);
+
+    server.listen(8080);
+
+        app.use((req, res, next) => {
+    console.log("hjey");
+    next();
+    //   permet de passer au middleware suivant
+    });
+    app.use((req, res, next) => {
+    console.log("o");
+    });
+
+Next permet à la req de continuer son chemin sinon il faut envoyer une réponse.
+
+### Comment fonctionne un middleware
+
+Un middleware est un concept essentiel du framework express.
+Express n'envoie pas de réponse par défaut.
+Grâce à express, en tête, content,... sont fournis et par défaut.
+Lecture middleware de haut en bas.
+
+### Coulisses d'Express
+
+app.listen => création de serveur et écoute sur le server.
+
+    const express = require("express");
+    const app = express();
+    // create app d'express, exécution de la fonction apportée par express , cela initialise un nouvel objet. Gestionnaire de requêtes
+    // creation objet app pour utiliser express avant de créer le serveur
+    app.use((req, res, next) => {
+    console.log("hjey");
+    next();
+    //   permet de passer au middleware suivant
+    });
+    app.use((req, res, next) => {
+    console.log("o");
+    res.send("<h1>Hello from express</h1>");
+    //   envoie d'une réponse
+    });
+    // utiliser une méthode fournie par express, permet d'ajouter une nouvelle fonction middleware. La fonction sera exécutée à chaque demande entrante et elle reçoit 3 args
+    // next fonction transmise à la fonction par express: permet à la demande de passer au middleware svt
+
+    app.listen(8080);
+
+
+### Gestion des différentes routes
+
+    const express = require("express");
+    const app = express();
+
+    app.use("/add-product", (req, res, next) => {
+    console.log("o");
+    res.send("<h1>Ajout de produit</h1>");
+    });
+    app.use("/", (req, res, next) => {
+    console.log("o");
+    res.send("<h1>Accueil</h1>");
+    });
+
+    app.listen(8080);
+
+### Analyser les requêtes entrantes
+
+Comment travailler avec les requêtes et comment extraite les données.
+
+npm install body-parser
+
+analyser le coprs de la req
+
+    const express = require("express");
+    const bodyParser = require("body-parser");
+    const app = express();
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+    // analyseur du corps de la req. Enregistre un middleware. Analyse en premier le coprs de la req
+
+    app.use("/add-product", (req, res) => {
+    res.send(
+        "<form action='/product' method='POST' ><input type='text' name='titre'><button type='submit'>Ajout de produit</button></form>"
+    );
+    });
+    app.use("/product", (req, res) => {
+    console.log(req.body);
+    //   undefined car req donne la ppt de corps body, mais par défaut req n'analyse pas le corps il fautun parser(analyseur) => { titre: 'aso' }
+    res.redirect("/");
+    });
+    app.use("/", (req, res, next) => {
+    res.send("<h1>Accueil</h1>");
+    });
+
+    app.listen(8080);
+
+### Utiliser le router express
+
+Externaliser le routage express dans d'autres fichiers.
+
+Dossier routes
+
+### Page 404
+
+### Filtrage des chemins
+
+Caractéristique du routeur express.
+Parfois les routes ont un chemin de départ externalisé commun, avec différentes méthodes.
+
+app.use("/admin", adminRoutes);
+
+### Création de page HTML
+
+### Retourner page 404
+
+### Utiliser une fonction d'assistance à la navigation
+
+Pour obtenir le répertoire parent. (__dirname)
+
+helpers path.js
+
+### Style
+
+pointer les fichiers css
+dossier public contient du contenu exposé au public
+Il faut que certaines requêtes puissent accèder au système de fichiers
+erreur 404
+Il faut utiliser une fonctionnalité d'express:
+pour servir des fichiers de façon statique, directement transmis au système de fichiers.
+
+middleware
+express.static
+pour servir un dossier statiquement
+accès lecture
+image, style, ...
+
+## Travailler avec du contenu dynamique et ajout de templates 
+
+Actuellement on renvoie des pages HTML statiques.
+Il est plutôt courant que certaines données soient gérées par le serveur, également dans la BDD.
+Sortir dinamyqueme,t le code HTML que l'on veut renvoyer aux user.
+
+### Partage de demandes enttre les demandes et les user
+
+Actuellement l'on ne travaille pas avec les données de l'application directement.
+Sans bdd on peut les stocker dans une var.
+Exemple: titre devrait être stocké de façon permanente.
+
+    const express = require("express");
+    const path = require("path");
+    const router = express.Router();
+    // mini app express liée à express
+    const products = [];
+    // /admin/add-product
+    router.get("/add-product", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "views", "add-product.html"));
+    });
+    router.post("/add-product", (req, res) => {
+    // console.log(req.body);
+    //   undefined car req donne la ppt de corps body, mais par défaut req n'analyse pas le corps il fautun parser(analyseur) => { titre: 'aso' }
+
+    res.redirect("/");
+    });
+
+    module.exports = { router, products };
+
 

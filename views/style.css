@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: 0;
+}
+.main-header{
+    width: 100%;
+    height: 3.5rem;
+    background-color: #c7cb61;
+}
+.main-header__item-list{
+    list-style: 100;
+    margin: 0;
+    padding: 0;
+}
