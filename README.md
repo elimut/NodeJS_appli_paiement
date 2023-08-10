@@ -1023,4 +1023,176 @@ Exemple: titre devrait être stocké de façon permanente.
 
     module.exports = { router, products };
 
+### Templating engines 
 
+Mettre du contenu dynamiquedans les pages HTML.
+
+On a un HTMLish Template, contient du code HTML, la structure,... qui contient également des contenus réservés.
+Il y a le contenu de NodeJS/express comme tableau factice, et un moteur de templates qui comprend une certaine syntaxe pour laquelle il analyse le HTMLish template et où il remplace les espaces réservés ou certains extraits de code en fonction du moteur utilisé, avec du vrai code HTML, mais ce contenu est généré par le serveur à la volée.
+Les user obtiennent une page HTML non codée en dure.
+
+EJS, PUG et Handlebars sont les plus connus.
+
+EJS => <p><%= name %></p>
+
+PUG => p #{name}
+
+HandleBars => <p>{{ name }}</p>
+
+### Installation et mise en oeuvre de EJS
+
+ npm install --save ejs pug express-handlebars
+
+dossier includes
+code partagés par les pages
+
+<%- mieux que <%= pour sortir du code html échappé, par défaut avec = on sort une var qui contient du code html, il ne le rendrait pas mais rendrait sous forme de texte pour éviter les attaques de script intersite, avec le moins on évite cela et rendre le code HTML directement.
+
+## MVC model view controller
+
+Structurer le code, séparation logique du code et les différentes fonctions.
+
+### MVC?
+
+Séparation des préoccupations.
+Les différentes parties du code fonct différentes choses.
+
+- **Views**: ce que voit l'user à la fin, rendre le bon contenu dans les docs html et le renvoyer à l'user. Elles sont découplées du code de l'application. Et ont juste quelques intégrations majeures ou mineures concernant les données qui lui sont injectées, dans le moteur de modèle pour générer des vues,
+- **Models**: objets ou font partie du code qui est chargé de représenter les données dans le code, et permette de travailler avec les données comme suavegarde des données,... ,
+- **Controllers**: point de connexion entre les views et les models, commes les views ne se soucient pas de la logique d'application et que les models se soucient de la façon dont on sauvegarde les données, extraction des données, ..., les controllers sont la chose qui fonctionne avec les models, en enregistrant ces données ou en déclenchant le processus de sauvegarde,... C'est l'intermédiare, il contient la logique intermédiaire.
+
+Les routes, sont essentiellement les choses qui définissent sur quel chemin pour quelle méthode http quel controller doit exécuter.
+C'est le model dans une application avec express ou construit avec express qui repose fortement sur le concept de middleware, les controllers sont divisés entre les fonctions de middleware où une partie de la logique peut être séparée et déplacée.
+ dans une autre fonction middleware.
+
+ ### Ajout de controllers
+
+Toute la logique repose sur les produits.
+Création dossier controllers, products.js
+export fct get dans admin.js pour l'ajouter dans la route
+
+### Ajout d'un mmodel de produit
+
+### Stockage de données dnas des fichiers via models
+
+Ne plus enregistrer les produits dans un tab mais dans un fichier.
+
+    const fs = require("fs");
+    const path = require("path");
+
+    module.exports = class Product {
+    constructor(title) {
+        this.title = title;
+        // prop de la classe construire objet de cette classe
+    }
+
+    save() {
+        const p = path.join(__dirname, "..", "data", "products.json");
+        fs.readFile(p, (err, fileContent) => {
+        var products = [];
+        if (!err) {
+            products = JSON.parse(fileContent);
+            //    objet de NODE qui prend les json entrant et les convertit en tab
+        }
+        products.push(this);
+        fs.writeFile(p, JSON.stringify(products), (err) => {
+            console.log(err);
+        });
+        //   convert tab ou objet en json
+        });
+    }
+    //   méthode de sauvegarde à la la classe pour sauvegarder le produit dans le tab. This car fait réf à l'objet créé
+
+    static fetchAll() {
+        const p = path.join(__dirname, "..", "data", "products.json");
+        fs.readFile(p, (err, fileContent) => {
+        if (err) {
+            return [];
+        }
+        return JSON.parse(fileContent);
+        //   renvoi tab sous forme analysée
+        });
+    }
+    //   recup des objets static permet de recup les objets sur la classe elle même et non sur l'objet instancié
+    };
+
+error length => 
+
+     fs.readFile(p, (err, fileContent) => {
+        if (err) {
+            return [];
+        }
+        return JSON.parse(fileContent);
+        //   renvoi tab sous forme analysée
+        });
+        => code async 
+    fecthAll exécute la igne path, puis fs.read mais enregistre if dans son registre d'events pour le mettre et se termine avec fetchAll qui ne retourne rien.
+    L'on peut mettre un callback dans fetchAll en args, pour passer une fonction dans fetchAll, fetchAll s'exzcutera une fois cela fait, de sorte que ce qui appelle fetchAll peut passer une fonction dont il a conscience d'être appelée et qui contient les données à retourner.
+    Cela permet d'aller sur le controller, où l'on appel fetchAll.
+
+### Refactorisation du code
+
+Création d'une focntion d'aide, dans une const (models product.js).
+Elle permettra de récupèrer les prod à partir d'un fichier, et elle fera la construction de chemin pour nous.
+
+## Améliorer l'application
+
+### Créer la structure du shop
+
+Views:
+dossier admin, shop
+index.ejs page accueil
+cart.ejs panier
+checkout paiement
+
+### Mise à jour de la navigation
+
+### Enregistrer les routes
+
+routes
+puis controller
+
+### Stockage des données produit
+
+Plus de logique dans l'ajout d'un produit.
+
+### Affichage des données produits
+
+product-list.ejs
+
+    <%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+    <%-include ('../includes/navigation.ejs') %>
+
+    <main>
+        <% if (prods.length >0) { %>
+        <div class="grid">
+            <% for (let products of prods) { %>
+                <article class="card product-item">
+                    <header class="card__header">
+                        <h1 class="product__title"><%= products.title %></h1>
+                    </header>
+                    <div class="card__image">
+                        <img src="https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png" alt="A Book">
+                    </div>
+                    <div class="card__content">
+                        <h2 class="product__price">$19.99</h2>
+                        <p class="product__description">A very interesting book about so many even more interesting things!</p>
+                    </div>
+                    <div class="card__actions">
+                        <button class="btn">Add to Cart</button>
+                    </div>
+                </article>
+            <% } %>
+        </div>
+        <% } else { %>
+            <h2>Pas de produits trouvés!</h2>
+        <% } %>
+    </main>
+
+    <%- include ('../includes/end.ejs') %>
+    Avant
+    
