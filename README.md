@@ -1243,4 +1243,54 @@ L'on peut transmettre des données dans le corps de la requête pour une méthod
 
 Entité disticnte du projet.
 
+### Utiliser les query params
+
+edit-product.ejs
+Même formulaire que add-product mais avec des champs pré remplis, suppression de add-product.ejs.
+Nous voulons obtenir une confirmation supplémentaire, 
+en nous assurant que les user doivent nous passer un paramètre de requête dans l'URL.
+Dans n'importe quelle URL,**en ajoutant un ?paire clef=valeur**.
+L'on peut avoir plusieurs paramètres en les séparant par &.
+
+http://localhost:8080/admin/edit-product/0.5752015382396547?edit=true&title=cool
+
+Ce sont des données facultatives.
+L'itinéraire atteint est celui après le point d'interrogation.
+Nous n'avons pas besoin de rajouter des informations sur les paramètres de requête que l'on pourrait avoir dans le fichier routes. Les chemins ne sont pas affectés.
+Mais l'on peut toujours les vérifier, dans les controller:
+
+    const editMode = req.query => y'a t'il dans la requête un objet.
+La valeur extraite est un string, donc "true" not true.
+
+### Pré-remplir la page edit product
+
+Il faut fetch le produit, en mode edit true.
+Besoin de l'id product.
+
+    exports.getEditProduct = (req, res) => {
+    // verification if req have an object (edit:key), l'on obtiendra la valeur souhaitée:
+    const editMode = req.query.edit;
+    if (!editMode) {
+        return res.redirect("/");
+    }
+    // Fetch product id to fecth product to edit (pre populatng form)
+    const prodId = req.params.productId;
+    // Use Product model to find product associate to the id with callback for the product to render the page
+    Product.findById(prodId, (product) => {
+        if (!product) {
+        return res.redirect("/");
+        }
+        res.render("admin/edit-product", {
+        pageTitle: "Edition d'articles",
+        path: "/admin/edit-product",
+        // edition if req's parameter
+        editing: editMode,
+        product: product,
+        });
+    });
+    };
+
+
+
+
 
