@@ -21,7 +21,8 @@
                         <p class="product__description"><%= products.description %></p>
                     </div>
                     <div class="card__actions">
-                        <button class="btn">Ajouter au panier</button>
+                        <%- include('../includes/add-to-cart.ejs', {product: products}) %>
+                        <!-- deuxième arg car ne reçoit pas la var product car include dans une boucle -->
                     </div>
                 </article>
             <% } %>

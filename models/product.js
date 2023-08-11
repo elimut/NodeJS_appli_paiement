@@ -24,6 +24,8 @@ module.exports = class Product {
   }
 
   save() {
+    this.id = Math.random().toString();
+    // id unique convertit en varchar
     getProductsFromFile((products) => {
       products.push(this);
       fs.writeFile(p, JSON.stringify(products), (err) => {
@@ -36,5 +38,13 @@ module.exports = class Product {
 
   static fetchAll(cb) {
     getProductsFromFile(cb);
+  }
+  static findById(id, cb) {
+    getProductsFromFile((products) => {
+      const product = products.find((p) => p.id === id);
+      // fct synch n'exécute aucun code
+      cb(product);
+    });
+    // filtrage des produits avec l'id
   }
 };

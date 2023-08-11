@@ -7,8 +7,10 @@ router.get("/add-product", adminController.getAddProduct);
 // ref à la fonction getAdd pas de parenthèses, express doit prendre cette fonction et la stocker puis dmd de page l'exécuter
 // /admin/add-product ajout produit
 router.post("/add-product", adminController.postAddproduct);
-// /admin/priducts accès page produits
+// /admin/products accès page produits
 router.get("/products", adminController.getProducts);
+// admin edit product
+router.get("edit-product/:productId", adminController.getEditProduct);
 
 module.exports = router;
 // module.exports = products;

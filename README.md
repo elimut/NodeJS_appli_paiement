@@ -1195,4 +1195,52 @@ product-list.ejs
 
     <%- include ('../includes/end.ejs') %>
     Avant
-    
+
+### Modification et suppression de produits
+
+### Ajouter un nouvel élément
+
+## Routes dynamiques et modèles avancés
+
+Nous avons besoin de transmettre des données dynamiques via nos routes.
+Nosu voulons être en mesure de coder certaines informations dans notre URL afin que nous puissions par exemple transmettre un id de produit dans le cadre de l' URL.
+
+### Ajustement du projet
+
+### Ajout de l'id dans l'URL
+
+Le model doit avoir un id.
+id dans ejs products.id
+
+
+### Extraire les paramètres dynamiques
+
+routes shop.js
+L'on peut dire à express que l'on aura un segment variable en ajoutant **":"** et le nom.
+Lecture des routes de haut en bas, si même chemin celui avec le bond doit être positionné après sinon les routes suivantes ne seraient pas reconnues.
+routes spécifiques en haut.
+controller:
+
+    const prodId = req.params.productId
+    nom par lequel on extrait les données après :
+
+routes maj connection au controller.
+
+### Charger les données d'un détail de produit
+
+model
+controller
+findById
+
+### Renvoyer la vue des détails
+
+### Passer des données avec la requête POST
+
+Ajout d'un article au panier.
+L'on peut transmettre des données dans le corps de la requête pour une méthode post.
+
+### Ajout d'un model panier
+
+Entité disticnte du projet.
+
+

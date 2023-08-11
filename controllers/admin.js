@@ -1,11 +1,8 @@
 const Product = require("../models/product");
 exports.getAddProduct = (req, res) => {
-  res.render("admin/add-product", {
+  res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
     path: "/admin/add-product",
-    formsCss: true,
-    productCss: true,
-    activeAddProduct: true,
   });
 };
 // accès page ajout produit GET /admin/add-product
@@ -23,6 +20,14 @@ exports.postAddproduct = (req, res) => {
   res.redirect("/");
 };
 // sur page addProduct POST new product /admin/add-product
+
+exports.editProduct = (req, res) => {
+  res.render("admin/edit-product", {
+    pageTitle: "Edition d'articles",
+    path: "/admin/add-product",
+    editing: true,
+  });
+};
 
 exports.getProducts = (req, res) => {
   Product.fetchAll((products) => {

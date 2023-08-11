@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
-// module chemin pour
 const shopController = require("../controllers/shop");
 
 router.get("/", shopController.getIndex);
-// accueil
+// Route vers accueil /
 router.get("/products", shopController.getProducts);
-// liste de produits
+// liste de produits /products
+router.get("/products/:productId", shopController.getProduct);
+// afficher les détails d'un livre /products/:productId
+router.post("/cart", shopController.postCart);
+// post panier /cart
 router.get("/cart", shopController.getCart);
-//panier
+//panier /cart
 router.get("/checkout", shopController.getCheckout);
-//paiment
+//paiement /checkout
+router.get("/orders", shopController.getOrders);
+//commandes /orders
 
 module.exports = router;
