@@ -1290,6 +1290,9 @@ Besoin de l'id product.
     });
     };
 
+### Lier la page d'édition de produits
+
+### Editter les données produits
 
 
 

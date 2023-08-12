@@ -45,6 +45,9 @@ exports.getEditProduct = (req, res) => {
   });
 };
 
+exports.postEditProduct = (req, res) => {};
+// cosntruire et remplacer le produit existant
+
 exports.getProducts = (req, res) => {
   Product.fetchAll((products) => {
     res.render("admin/products", {
