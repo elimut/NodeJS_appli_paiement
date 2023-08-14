@@ -1292,7 +1292,84 @@ Besoin de l'id product.
 
 ### Lier la page d'édition de produits
 
-### Editter les données produits
+### Editer les données produits
+
+save() dans le model product permet actuellement de qauvegarder un nouvel objet:
+
+     save() {
+        this.id = Math.random().toString();
+        // id unique convertit en varchar
+        getProductsFromFile((products) => {
+        products.push(this);
+        fs.writeFile(p, JSON.stringify(products), (err) => {
+            console.log(err);
+        });
+        });
+        //   convert tab ou objet en json
+    }
+Nous allons l'utiliser pour mettre à jour un produit déjà existant:
+vérification de l'id, s'il existe déjà, nous allons donc ajouter l'id au constructeur ainsi un id sera attribué aux produits n'en ayant pas.
+
+      save() {
+    getProductsFromFile((products) => {
+      if (id) {
+        // verify of product existing, searching index of existing product
+        const existingProductId = products.findIndex(
+          (prod) => prod.id === this.id
+        );
+        // create update array with search, extracte property all existing products in new array
+        const updatedProducts = [...products];
+        // replace index with information of existing product found and new create
+        updatedProducts[existingProductId] = this;
+        fs.writeFile(p, JSON.stringify(products), (err) => {
+          console.log(err);
+        });
+      } else {
+        this.id = Math.random().toString();
+        // id unique convertit en varchar
+        products.push(this);
+        //
+        fs.writeFile(p, JSON.stringify(products), (err) => {
+          console.log(err);
+        });
+      }
+    });
+  }
+
+Dans le controller:
+lors de l'ajout du nouveau produit (postAdddProduct) => ajout property id.
+
+### Supprimer des articles du panier, et des produits
+
+### Affichage des articles du panier
+ 
+### Suppression des articles du panier
+
+### Bogue de suppression de produit
+
+Quan le panier est vide, le fait de supprimer un produit par l'admin entraîne une erreur.
+En effet, dans le product'models, nous utilisons la propriété qty de cart's models.
+
+
+## Introduction à SQL
+
+Base de données, programme spécifique qui est conçu pour stocker des données et les récupèrer.
+
+### Choisir une bdd
+
+SQL ou noSQL?
+
+Objectif: stocker des données et les rendre facilement accessible ou disponible, rapide.
+
+SQL: MySQl (moteur de bdd),...
+NoSql: MongoDB,...
+
+Base SQL:
+tables, qui ont des champs ou colonnes.
+Nous remplissons les données de ces champs = enregistrements (tuples).
+Nous pouvons lier les tables
+
+
 
 
 

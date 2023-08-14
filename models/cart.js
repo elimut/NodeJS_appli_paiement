@@ -49,4 +49,45 @@ module.exports = class Cart {
       });
     });
   }
+
+  static deleteProduct(id, productPrice) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        // no cart to delete
+        return;
+      }
+      // old cart property in the new object
+      const updatedCart = { ...JSON.parse(fileContent) };
+      // search product's quantity with id of product to delete
+      const product = updatedCart.products.find((prod) => prod.id === id);
+      // verify if we have product and if not, don't continue instrcution because if we don't have product in cart and we want to delete a product (admin) =>  qty is an error
+      if (!product) {
+        return;
+      }
+      // store quantity in const
+      const productQty = product.qty;
+      // update products in the cart, we keep only products we don't need to be delete
+      updatedCart.products = updatedCart.products.filter(
+        (prod) => prod.id !== id
+      );
+      // update cart's total price
+      updatedCart.totalPrice =
+        updatedCart.totalPrice - productPrice * productQty;
+      // update BDD
+      fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
+        console.log(err);
+      });
+    });
+  }
+
+  static getCart(cb) {
+    fs.readFile(p, (err, fileContent) => {
+      const cart = JSON.parse(fileContent);
+      if (err) {
+        cb(null);
+      } else {
+        cb(cart);
+      }
+    });
+  }
 };

@@ -18,14 +18,19 @@
                 <input type="text" name="imageUrl" id="imageUrl" value="<% if (editing) { %><%= product.imageUrl %><%  } %>">
             </div>
             <div class="form-control">
+                <label for="description">Description</label>
+                <!-- if editing true can edit product -->
+                <textarea name="description" id="description" rows="5"><% if (editing) { %><%= product.description %><%  } %></textarea>
+            </div>
+            <div class="form-control">
                 <label for="price">Prix</label>
                 <input type="number" name="price" id="price" step="0.01" value="<% if (editing) { %><%= product.price %><%  } %>">
             </div>
-            <div class="form-control">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" rows="5"><% if (editing) { %><%= product.description %><%  } %></textarea>
-            </div>
-            <!-- if editing true can edit product -->
+            <!-- store existing product's id fot the controller, it's just an option to update not for addind product -->
+            <% if (editing) { %>
+                <!-- not see by the user, id will be include in the form, and will be extracte with the name productId in the incoming req of controller -->
+                <input type="hidden" value="<%= product.id %>" name="productId">
+            <% } %>
             <button class="btn" type="submit"><% if(editing){ %>Modifier<% } else { %>Ajouter<% } %></button>
         </form>
     </main>

@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+
 exports.getAddProduct = (req, res) => {
   res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
@@ -16,7 +17,8 @@ exports.postAddproduct = (req, res) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  const product = new Product(title, imageUrl, description, price);
+  // null for id because if we added a new product id his not define
+  const product = new Product(null, title, imageUrl, description, price);
   product.save();
   res.redirect("/");
 };
@@ -45,7 +47,25 @@ exports.getEditProduct = (req, res) => {
   });
 };
 
-exports.postEditProduct = (req, res) => {};
+exports.postEditProduct = (req, res) => {
+  // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
+  const prodId = req.body.productId;
+  const updatedTitle = req.body.title;
+  const updatedImageUrl = req.body.imageUrl;
+  const updatedDesc = req.body.description;
+  const updatedPrice = req.body.price;
+  // Create a new product instance (product updated) with new informations and call save() of product's model
+  const updatedProduct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedDesc,
+    updatedPrice
+  );
+  // call save method to save new instance with updated information's product
+  updatedProduct.save();
+  res.redirect("/admin/products");
+};
 // cosntruire et remplacer le produit existant
 
 exports.getProducts = (req, res) => {
@@ -56,4 +76,13 @@ exports.getProducts = (req, res) => {
       path: "/admin/products",
     });
   });
+};
+
+exports.postDeleteProduct = (req, res) => {
+  // extract prod id to delete from the request body
+  const prodId = req.body.productId;
+  console.log(prodId);
+
+  Product.deleteById(prodId);
+  res.redirect("/admin/products");
 };

@@ -12,7 +12,9 @@ router.get("/products", adminController.getProducts);
 // admin edit product
 router.get("/edit-product/:productId", adminController.getEditProduct);
 // admin update product
-router.post("/edit-product/");
+router.post("/edit-product/", adminController.postEditProduct);
+// admin delete product
+router.post("/delete-product", adminController.postDeleteProduct);
 
 module.exports = router;
 // module.exports = products;

@@ -4,4 +4,22 @@
 
 <body>
     <%-include ('../includes/navigation.ejs') %>
+    <main>
+        <!-- check if have product to display them. shop controller-->
+        <% if(products.length > 0) { %>
+            <ul>
+                <% products.forEach(p => { %>
+                    <li>
+                        <p><%= p.productData.title %>(<%= p.qty %>)</p>
+                        <form action="/cart-delete-item" method="POST">
+                            <input type="hidden" value="<%= p.productData.id %>" name="productId">
+                            <button class="btn" type="submit" >Supprimer</button>
+                        </form>
+                    </li>
+               <% }) %>
+            </ul>
+        <% } else { %>
+            <h2>Panier vide!</h2>
+        <% } %>
+    </main>
     <%-include ('../includes/end.ejs') %>
