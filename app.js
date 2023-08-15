@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const path = require("path");
 const pageNotFoundController = require("./controllers/error");
+// import connection bdd
+const db = require("./util/database");
 
 app.set("view engine", "ejs");
 // config var globale pour pug sur notre app express lui dire où trouver le moteur de template

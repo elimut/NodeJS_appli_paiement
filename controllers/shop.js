@@ -1,46 +1,54 @@
+// import models product and cart to use methods
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 
+// get all products  /products page article
 exports.getProducts = (req, res) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "Articles",
-      path: "/products",
-      hasProducts: products.length > 0,
-      activeShop: true,
-      productCss: true,
-    });
-  });
-  // console.log(adminData.products);
-  //  données inhérentes à Node, il faut donc réussir à les partager seulement pour l'user dont vient la demande
-  //   concat des différents segments du chemin __dirname var globale node qui contient le chemin absolu du système d'exploitatioon vers ce dossier de projet détecte l'os pour faire le chemin
+  Product.fetchAll()
+    // we got a nested array, we use destructuring to extract data of valur receive in args
+    // anonyme fonction will be execute when we get data
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        pageTitle: "Articles",
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
-// get accueil avec les prod ajoutés /
 
+// Get détails product  /products/:productId
 exports.getProduct = (req, res) => {
+  // productId extract from hidden input in view product ejs
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
-    res.render("shop/product-detail", {
-      product: product,
-      prods: product,
-      pageTitle: "Détail de l'article",
-      path: "/products",
-    });
-  });
+  Product.findById(prodId)
+    .then(([product]) =>
+      res.render("shop/product-detail", {
+        // fonction return an array but view expect just one object => [0]
+        product: product[0],
+        prods: product,
+        pageTitle: "Détail de l'article",
+        path: "/products",
+      })
+    )
+    .catch((err) => console.log(err));
 };
-// get détails livre  "/products/:productId"
 
+// get All products page accueil /
 exports.getIndex = (req, res) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "Boutique",
-      path: "/",
-    });
-  });
+  // fetcAll return a promise
+  Product.fetchAll()
+    // we got a nested array, we use destructuring to extract data of valur receive in args
+    // anonyme fonction will be execute when we get data
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        pageTitle: "Boutique",
+        path: "/",
+      });
+    })
+    .catch((err) => console.log(err));
 };
-// get index
 
 exports.getCart = (req, res) => {
   Cart.getCart((cart) => {

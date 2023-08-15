@@ -1,28 +1,31 @@
+// import product's model
+// import product's model
 const Product = require("../models/product");
 
+//Page admin ajout produit GET /admin/add-product
 exports.getAddProduct = (req, res) => {
   res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
     path: "/admin/add-product",
+    // if editing false get add product form if true we get update product form => views ejs edit-product
     editing: false,
   });
 };
-// accès page ajout produit GET /admin/add-product
 
+// Page admin ajout de produit POST new product /admin/add-product
 exports.postAddproduct = (req, res) => {
-  // console.log(req.body);
-  //   undefined car req donne la ppt de corps body, mais par défaut req n'analyse pas le corps il fautun parser(analyseur) => { titre: 'aso' }
-  //   products.push({ title: req.body.title });
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
   // null for id because if we added a new product id his not define
   const product = new Product(null, title, imageUrl, description, price);
-  product.save();
-  res.redirect("/");
+  product
+    .save()
+    // redirect only when insertion is finished
+    .then(res.redirect("/"))
+    .catch((err) => console.log(err));
 };
-// sur page addProduct POST new product /admin/add-product
 
 exports.getEditProduct = (req, res) => {
   // verification if req have an object (edit:key), l'on obtiendra la valeur souhaitée:

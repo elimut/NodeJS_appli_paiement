@@ -1367,10 +1367,369 @@ NoSql: MongoDB,...
 Base SQL:
 tables, qui ont des champs ou colonnes.
 Nous remplissons les données de ces champs = enregistrements (tuples).
-Nous pouvons lier les tables
+Nous pouvons lier les tables.
+**Tables relationnelles**;
+
+Schéma de données solide, chaque table est clairement définie.
+
+Trois types de relations entre les tables:
+- one to one, chaque enregistrement correspond à un autre enregistrement,
+- one to many, un enregistrement peut en contenir plusieurs,
+- many to many, plusieurs enregistrements peuvent en contenir plusieurs.
+
+**SQL** signifie langage de requête structuré (structured query langage).
+Les requêtes sont des commandes que nous utilisons pour interagir avec la base de données.
+
+### Connecter la BDD à l'API
+
+npm install --save mysql2
+
+Permet d'écrire et exécuter du code SQL dans nodeJS.
+
+Connexion BDD:
+dossier util, connexion BDD et rendre un objet de connexion qui nous permet d'exécuter des requêtes.
+
+    // import & store mysql's package to use
+    const mysql = require("mysql2");
+
+    // create connection's pool, object mysql. pool is better for multi queries. one req one connection. when req is finished, connection is retransmitted  in the pool et she's new available for a new query.
+    // passed a js object with informations about dbb
+    const pool = mysql.create({
+    host: "localhost",
+    user: "root",
+    database: "boutique",
+    password: "root",
+    });
+
+    // export to use pool with promise to use promise when we work with this connextion who manage async tasks. We don't have nests callback
+    module.exports = pool.promise();
+
+![bdd](img/Co-BDD_install.png)
+
+### Création de tables BDD
+
+Promesses ont deux fonctions:
+
+**then** et **catch**.
+Fonctions qui peuvent être enchaînées sur le résultat du code exécuté.
+S'exécutent qur ce que nous rendra la requête, une **promesse** est un objet JS non spécifique à NodeJs, se trouve aussi dans le js du naviq=gateur.
+Cela nous permet de travailler avec du code **asynchrone**.
+Au lieu d'utiliser des rappels, nous utilisons le package mysql2, les promesses permetttent d'écrire du code plus structué.
+Au lieu d'avoir des fonctions anonymes imbriquées comme deuxième argument, l'on a un bloc then qui obtiendra alors la fonction anonyme exécuter.
+Catch s'exécute en cas d'erreurs, l'on obtient l'objet error.
+
+Récu^ération d'un tableau imbriqué, avec un objet contenant des objets.
+Le premier tableau contient nos données, et le second des métadonnées sur la table.
+
+![fetch dbb](img/Test_req&Co_bdd.png)
+![fetch dbb](img/Test_req&Co_bdd2.png)
+
+app.js:
+
+    // execute connection db. Then use promise of connection
+    // db.execute("SELECT * FROM products")
+    //   //result of req
+    //   .then((result) => {
+    //     // fetch only arry of data products
+    //     console.log(result[0]);
+    //   })
+    //   //   get error object
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+### Récupèrer les données produits
+
+Travail à partir des models.
+
+product.js models avant:
+
+    const fs = require("fs");
+    const path = require("path");
+    const p = path.join(__dirname, "..", "data", "products.json");
+
+    const Cart = require("./cart");
+
+    const getProductsFromFile = (cb) => {
+    fs.readFile(p, (err, fileContent) => {
+        //   rappel d'un tab vide
+        if (err) {
+        cb([]);
+        } else {
+        cb(JSON.parse(fileContent));
+        //   renvoi tab sous forme analysée
+        }
+    });
+    //   recup des objets satic permet de recup les objets sur la classe elle même et non sur l'objet instancié
+    };
+
+    module.exports = class Product {
+    constructor(id, title, imageUrl, description, price) {
+        this.id = id;
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
+        // prop de la classe construire objet de cette classe
+    }
+
+    save() {
+        getProductsFromFile((products) => {
+        if (this.id) {
+            // verify of product existing, searching index of existing product
+            const existingProductIndex = products.findIndex(
+            (prod) => prod.id === this.id
+            );
+            // create update array with search, extracte property all existing products in new array
+            const updatedProducts = [...products];
+            // replace index with information of existing product found and new create
+            updatedProducts[existingProductIndex] = this;
+            fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+            console.log(err);
+            });
+        } else {
+            this.id = Math.random().toString();
+            // id unique convertit en varchar
+            products.push(this);
+            fs.writeFile(p, JSON.stringify(products), (err) => {
+            console.log(err);
+            });
+        }
+        });
+    }
+    //   méthode de sauvegarde à la la classe pour sauvegarder le produit dans le tab. This car fait réf à l'objet créé
+
+    static deleteById(id) {
+        // delete product by id and delete in the cart
+        getProductsFromFile((products) => {
+        // search in product products'id to delete, we can extracte product.price to update cart
+        const product = products.find((prod) => prod.id === id);
+        // console.log(products);
+        // keep only product no deleted
+        const updatedProducts = products.filter((prod) => prod.id !== id);
+        fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+            if (!err) {
+            // call delete product in the cart's model with product's id to delete
+            Cart.deleteProduct(id, product.price);
+            }
+        });
+        });
+    }
+
+    static fetchAll(cb) {
+        getProductsFromFile(cb);
+    }
+
+    static findById(id, cb) {
+        getProductsFromFile((products) => {
+        const product = products.find((p) => p.id === id);
+        // fct synch n'exécute aucun code
+        cb(product);
+        });
+        // filtrage des produits avec l'id
+    }
+    };
 
 
+shop.js avant:
 
+    const Product = require("../models/product");
+    const Cart = require("../models/cart");
+
+    exports.getProducts = (req, res) => {
+    Product.fetchAll((products) => {
+        res.render("shop/product-list", {
+        prods: products,
+        pageTitle: "Articles",
+        path: "/products",
+        hasProducts: products.length > 0,
+        activeShop: true,
+        productCss: true,
+        });
+    });
+    // console.log(adminData.products);
+    //  données inhérentes à Node, il faut donc réussir à les partager seulement pour l'user dont vient la demande
+    //   concat des différents segments du chemin __dirname var globale node qui contient le chemin absolu du système d'exploitatioon vers ce dossier de projet détecte l'os pour faire le chemin
+    };
+    // get accueil avec les prod ajoutés /
+
+    exports.getProduct = (req, res) => {
+    const prodId = req.params.productId;
+    Product.findById(prodId, (product) => {
+        res.render("shop/product-detail", {
+        product: product,
+        prods: product,
+        pageTitle: "Détail de l'article",
+        path: "/products",
+        });
+    });
+    };
+    // get détails livre  "/products/:productId"
+
+    exports.getIndex = (req, res) => {
+    Product.fetchAll((products) => {
+        res.render("shop/product-list", {
+        prods: products,
+        pageTitle: "Boutique",
+        path: "/",
+        });
+    });
+    };
+    // get index
+
+    exports.getCart = (req, res) => {
+    Cart.getCart((cart) => {
+        Product.fetchAll((products) => {
+        // no product in  cart => []
+        const cartProducts = [];
+        for (product of products) {
+            const cartProductData = cart.products.find(
+            (prod) => prod.id === product.id
+            );
+            // extract cart's product from cart
+            if (cartProductData) {
+            cartProducts.push({ productData: product, qty: cartProductData.qty });
+            }
+        }
+        res.render("shop/cart", {
+            pageTitle: "Panier",
+            path: "/cart",
+            products: cartProducts,
+        });
+        });
+    });
+    };
+    // get panier
+
+    exports.postCart = (req, res) => {
+    const prodId = req.body.productId;
+    // search product by id set in URL
+    Product.findById(prodId, (product) => {
+        // product receive by search in BDD to post into cart
+        Cart.addProduct(prodId, product.price);
+    });
+    res.redirect("/cart");
+    };
+
+    exports.postCartDeleteProduct = (req, res) => {
+    // extract id of product we want to delete in cart
+    const prodId = req.body.productId;
+    // obtention product' informations (price) to update cart
+    Product.findById(prodId, (product) => {
+        Cart.deleteProduct(prodId, product.price);
+        res.redirect("/cart");
+    });
+    };
+
+    exports.getCheckout = (req, res) => {
+    res.render("shop/checkout", {
+        pageTitle: "Paiement",
+        path: "/checkout",
+    });
+    };
+    // get page paiement
+
+    exports.getOrders = (req, res) => {
+    res.render("shop/orders", {
+        pageTitle: "Commande",
+        path: "/orders",
+    });
+    };
+    // get page paiement
+
+### Ajout de produit
+
+admin.js controller
+
+    const Product = require("../models/product");
+
+    exports.getAddProduct = (req, res) => {
+    res.render("admin/edit-product", {
+        pageTitle: "Ajout d'articles",
+        path: "/admin/add-product",
+        editing: false,
+    });
+    };
+    // accès page ajout produit GET /admin/add-product
+
+    exports.postAddproduct = (req, res) => {
+    // console.log(req.body);
+    //   undefined car req donne la ppt de corps body, mais par défaut req n'analyse pas le corps il fautun parser(analyseur) => { titre: 'aso' }
+    //   products.push({ title: req.body.title });
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const description = req.body.description;
+    const price = req.body.price;
+    // null for id because if we added a new product id his not define
+    const product = new Product(null, title, imageUrl, description, price);
+    product.save();
+    res.redirect("/");
+    };
+    // sur page addProduct POST new product /admin/add-product
+
+    exports.getEditProduct = (req, res) => {
+    // verification if req have an object (edit:key), l'on obtiendra la valeur souhaitée:
+    const editMode = req.query.edit;
+    if (!editMode) {
+        return res.redirect("/");
+    }
+    // Fetch product id to fecth product to edit (pre populatng form)
+    const prodId = req.params.productId;
+    // Use Product model to find product associate to the id with callback for the product to render the page
+    Product.findById(prodId, (product) => {
+        if (!product) {
+        return res.redirect("/");
+        }
+        res.render("admin/edit-product", {
+        pageTitle: "Edition d'articles",
+        path: "/admin/edit-product",
+        // edition if req's parameter
+        editing: editMode,
+        product: product,
+        });
+    });
+    };
+
+    exports.postEditProduct = (req, res) => {
+    // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
+    const prodId = req.body.productId;
+    const updatedTitle = req.body.title;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedDesc = req.body.description;
+    const updatedPrice = req.body.price;
+    // Create a new product instance (product updated) with new informations and call save() of product's model
+    const updatedProduct = new Product(
+        prodId,
+        updatedTitle,
+        updatedImageUrl,
+        updatedDesc,
+        updatedPrice
+    );
+    // call save method to save new instance with updated information's product
+    updatedProduct.save();
+    res.redirect("/admin/products");
+    };
+    // cosntruire et remplacer le produit existant
+
+    exports.getProducts = (req, res) => {
+    Product.fetchAll((products) => {
+        res.render("admin/products", {
+        prods: products,
+        pageTitle: "Articles",
+        path: "/admin/products",
+        });
+    });
+    };
+
+    exports.postDeleteProduct = (req, res) => {
+    // extract prod id to delete from the request body
+    const prodId = req.body.productId;
+    console.log(prodId);
+
+    Product.deleteById(prodId);
+    res.redirect("/admin/products");
+    };
+
+## Sequelize
 
 
 
