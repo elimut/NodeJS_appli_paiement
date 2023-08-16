@@ -2,14 +2,12 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 
-// get all products  /products page article
+// Get all products  /products page article
 exports.getProducts = (req, res) => {
-  Product.fetchAll()
-    // we got a nested array, we use destructuring to extract data of valur receive in args
-    // anonyme fonction will be execute when we get data
-    .then(([rows, fieldData]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
-        prods: rows,
+        prods: products,
         pageTitle: "Articles",
         path: "/products",
       });
@@ -21,28 +19,34 @@ exports.getProducts = (req, res) => {
 exports.getProduct = (req, res) => {
   // productId extract from hidden input in view product ejs
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(([product]) =>
+  // Product.findAll({ where: { id: prodId } })
+  //   // return an array with a lot of element. Interesting by first element
+  //   .then((products) => {
+  //     console.log(products);
+  //     res.render("shop/product-detail", {
+  //       product: products[0],
+  //       pageTitle: `Détails de l'article ${products[0].title}`,
+  //       path: "/products",
+  //     });
+  //   });
+  Product.findByPk(prodId)
+    .then((product) =>
       res.render("shop/product-detail", {
-        // fonction return an array but view expect just one object => [0]
-        product: product[0],
-        prods: product,
-        pageTitle: "Détail de l'article",
+        product: product,
+        pageTitle: `Détails de l'article ${product.title}`,
         path: "/products",
       })
     )
     .catch((err) => console.log(err));
 };
 
-// get All products page accueil /
+// Get All products page accueil /
 exports.getIndex = (req, res) => {
-  // fetcAll return a promise
-  Product.fetchAll()
-    // we got a nested array, we use destructuring to extract data of valur receive in args
-    // anonyme fonction will be execute when we get data
-    .then(([rows, fieldData]) => {
+  Product.findAll()
+    // reach array of products
+    .then((products) => {
       res.render("shop/product-list", {
-        prods: rows,
+        prods: products,
         pageTitle: "Boutique",
         path: "/",
       });
@@ -50,34 +54,30 @@ exports.getIndex = (req, res) => {
     .catch((err) => console.log(err));
 };
 
+// Get page panier /cart
+// use cart associate at connected user to get & render cart
 exports.getCart = (req, res) => {
-  Cart.getCart((cart) => {
-    Product.fetchAll((products) => {
-      // no product in  cart => []
-      const cartProducts = [];
-      for (product of products) {
-        const cartProductData = cart.products.find(
-          (prod) => prod.id === product.id
-        );
-        // extract cart's product from cart
-        if (cartProductData) {
-          cartProducts.push({ productData: product, qty: cartProductData.qty });
-        }
-      }
-      res.render("shop/cart", {
-        pageTitle: "Panier",
-        path: "/cart",
-        products: cartProducts,
-      });
-    });
-  });
+  req.user
+    .getCart()
+    .then((cart) => {
+      return cart
+        .getProducts()
+        .then((products) => {
+          res.render("shop/cart", {
+            pageTitle: "Panier",
+            path: "/cart",
+            products: products,
+          });
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
 };
-// get panier
 
 exports.postCart = (req, res) => {
   const prodId = req.body.productId;
   // search product by id set in URL
-  Product.findById(prodId, (product) => {
+  Product.findByPk(prodId, (product) => {
     // product receive by search in BDD to post into cart
     Cart.addProduct(prodId, product.price);
   });

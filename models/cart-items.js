@@ -6,15 +6,19 @@ const sequelize = require("../util/database");
 
 // Create models cart with connection pool of sequelize
 // first arg= name of table, second: structure of models, JS object (attributs of models)
-const Cart = sequelize.define("cart", {
+const CartItem = sequelize.define("cartItem", {
   // attributs are define with object too
-  // only id because cart belongs one user, but can have a lot of products => new models cart-item
+  //   item is a combinaison of product and id cart => create association in app.js
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
+  quantity: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
 });
 
-module.exports = Cart;
+module.exports = CartItem;

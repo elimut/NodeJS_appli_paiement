@@ -8,10 +8,10 @@
         <h1>Détails de l'article</h1>
         <h2><%= product.title %></h2>
         <hr>
-        <div>
+        <div class="image">
             <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
         </div>
-        <h2><%= product.price %></h2>
+        <h2><%= product.price %>€</h2>
         <p><%= product.description %></p>
         <%- include('../includes/add-to-cart.ejs') %>
         <form action="/products" method="GET">

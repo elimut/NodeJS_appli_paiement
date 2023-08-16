@@ -1,9 +1,9 @@
 // import product's model
-// import product's model
 const Product = require("../models/product");
 
 //Page admin ajout produit GET /admin/add-product
 exports.getAddProduct = (req, res) => {
+  // reach page
   res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
     path: "/admin/add-product",
@@ -14,42 +14,59 @@ exports.getAddProduct = (req, res) => {
 
 // Page admin ajout de produit POST new product /admin/add-product
 exports.postAddproduct = (req, res) => {
+  // store attriubte of table in body req
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  // null for id because if we added a new product id his not define
-  const product = new Product(null, title, imageUrl, description, price);
-  product
-    .save()
-    // redirect only when insertion is finished
-    .then(res.redirect("/"))
+  // use object user in req (store in app.js) and method to create an associate product proprosed by sequelize with associations
+  req.user
+    .createProduct({
+      title: title,
+      imageUrl: imageUrl,
+      description: description,
+      price: price,
+    })
+    .then((_) => {
+      console.log("Created product");
+      res.redirect("/admin/products");
+    })
     .catch((err) => console.log(err));
 };
 
+// Get product to update with btn modifier page /admin/edit-product
 exports.getEditProduct = (req, res) => {
-  // verification if req have an object (edit:key), l'on obtiendra la valeur souhaitée:
+  // Verify if req have an object (edit:key):
   const editMode = req.query.edit;
   if (!editMode) {
     return res.redirect("/");
   }
   // Fetch product id to fecth product to edit (pre populatng form)
   const prodId = req.params.productId;
-  // Use Product model to find product associate to the id with callback for the product to render the page
-  Product.findById(prodId, (product) => {
-    if (!product) {
-      return res.redirect("/");
-    }
-    res.render("admin/edit-product", {
-      pageTitle: "Edition d'articles",
-      path: "/admin/edit-product",
-      // edition if req's parameter
-      editing: editMode,
-      product: product,
-    });
-  });
+  // Use Product model to find product associate to the id for the product to render the page
+  // reach page only for user connected
+  req.user
+    // fetch product to edit
+    .getProducts({ where: { id: prodId } })
+    // Product.findByPk(prodId)
+    .then((products) => {
+      // receive an array, to see the propertys of product to edit we need to specify we want the first element of this array
+      const product = products[0];
+      if (!product) {
+        return res.redirect("/");
+      }
+      res.render("admin/edit-product", {
+        pageTitle: "Edition d'articles",
+        path: "/admin/edit-product",
+        // edition if req's parameter
+        editing: editMode,
+        product: product,
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
+// Put product page /admin/edit-product/:id?edit=true
 exports.postEditProduct = (req, res) => {
   // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
   const prodId = req.body.productId;
@@ -57,35 +74,52 @@ exports.postEditProduct = (req, res) => {
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
   const updatedPrice = req.body.price;
-  // Create a new product instance (product updated) with new informations and call save() of product's model
-  const updatedProduct = new Product(
-    prodId,
-    updatedTitle,
-    updatedImageUrl,
-    updatedDesc,
-    updatedPrice
-  );
-  // call save method to save new instance with updated information's product
-  updatedProduct.save();
-  res.redirect("/admin/products");
+  Product.findByPk(prodId)
+    .then((product) => {
+      product.title = updatedTitle;
+      product.imageUrl = updatedImageUrl;
+      product.description = updatedDesc;
+      product.price = updatedPrice;
+      // sequelize method to save in bdd. Return to return promise of save()
+      return product.save();
+    })
+    // promise for save
+    .then((result) => {
+      console.log("Produit mis à jour");
+      // to redirect when promise is finished, async
+      res.redirect("/admin/products");
+    })
+    // catch for all code
+    .catch((err) => console.log(err));
 };
-// cosntruire et remplacer le produit existant
 
+// Get all products page gestion admin produit /admin/products
 exports.getProducts = (req, res) => {
-  Product.fetchAll((products) => {
-    res.render("admin/products", {
-      prods: products,
-      pageTitle: "Articles",
-      path: "/admin/products",
-    });
-  });
+  // find products for the user connected
+  req.user
+    .getProducts()
+    .then((products) => {
+      res.render("admin/products", {
+        prods: products,
+        pageTitle: "Articles",
+        path: "/admin/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
+// Delete product /admin/product/:id
 exports.postDeleteProduct = (req, res) => {
   // extract prod id to delete from the request body
   const prodId = req.body.productId;
-  console.log(prodId);
-
-  Product.deleteById(prodId);
-  res.redirect("/admin/products");
+  Product.findByPk(prodId)
+    .then((product) => {
+      // return a promise
+      return product.destroy();
+    })
+    .then((result) => {
+      console.log("Produit supprimé!");
+      res.redirect("/admin/products");
+    })
+    .catch((err) => console.log(err));
 };

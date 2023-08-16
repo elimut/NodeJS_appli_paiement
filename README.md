@@ -1731,5 +1731,600 @@ admin.js controller
 
 ## Sequelize
 
+Nous n'écrirons plus des instrcutions SQL, nous utiliserons un package tiers qui nous permet de travailler avec des objets JS et des méthodes pour gérer la bdd.
 
+### Sequelize?
+
+Package tiers de NodeJS, c'est une bibliothèque de mappage relationnel objet.
+Il fait le code SQL en arrière plan, et le map en objet JS avec des méthodes que nous pouvons appeler pour éxécuter ce code, nous n'écrivons donc jamais de code SQL par nous même.
+Notre objet, model est mapé à une table de bdd par séquencement, il crée automatiquement cette table pour nous même, il établit automatiquement des relations et des tables.
+Par exemple, lorsque nous créons un user, l'on appelle une méthode sur cet objet JS user et Sequelize exécute la requête SQL requise.
+
+**models**: définir quelles données définissent un models et quelles données seront enregistrées dans la bdd.
+=> Models: User
+L'on peut ensuite instancier ces models, ces "classes", nous pouvons éxécuter les fonctions constructeurs ou utiliser des méthodes utilitaires pour créer un nouvel objet basé sur ce models afin que nous ayons une connexion , et ensuite exécuter des requêtes dessus.
+=> Instances: const user = User.build()
+=> Queries: User.findAll()
+L'on peut également associer des models.
+=> Associations: User.hasMany(Product).
+
+### Connection à la bdd
+
+npm install --save sequelize
+
+Sequelize a besoin du package MySql2 pour fonctionner.
+
+Création d'un models sequelize et connection à la bdd.
+(drop table products)
+
+database.js util avant:
+
+    // import & store mysql's package to use
+    const mysql = require("mysql2");
+
+    // create connection's pool, object mysql. pool is better for multi queries. one req one connection. when req is finished, connection is retransmitted  in the pool et she's new available for a new query.
+    // passed a js object with informations about dbb
+    const pool = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    database: "boutique",
+    password: "root",
+    });
+
+    // export to use pool with promise to use promise when we work with this connextion who manage async tasks. We don't have nests callback
+    module.exports = pool.promise();
+
+### Définir un model
+
+product.js models avant:
+
+    // import db to access db
+    const db = require("../util/database");
+
+    // Create product object
+    module.exports = class Product {
+    constructor(id, title, imageUrl, description, price) {
+        // property of object
+        this.id = id;
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
+    }
+
+    // Insert and save data in db
+    save() {
+        // reach db to save data
+        // create data in products, id auto generate by bdd
+        // to save without SQL injection (attack with injection special data in input field like SQL query) we use ? and [] with order field
+        return db.execute(
+        "INSERT INTO products (title, imageUrl, description, price) VALUES (?, ?, ?, ?)",
+        [this.title, this.imageUrl, this.description, this.price]
+        );
+    }
+
+    static deleteById(id) {}
+
+    // Get all products from db
+    static fetchAll() {
+        // reach bdd and execute query get products in db
+        return db.execute("SELECT * FROM products");
+    }
+    // Get by id from db
+    static findById(id) {
+        return db.execute("SELECT * FROM products WHERE products.id = ?", [id]);
+    }
+    };
+
+### Synchronisation des models avec la BDD
+
+app.js
+synchro des tables
+=> sequelize exécute cette requête SQL automatiquement:
+
+    Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'products' AND TABLE_SCHEMA = 'boutique'
+    Executing (default): CREATE TABLE IF NOT EXISTS `products` (`id` INTEGER NOT NULL auto_increment , `title` VARCHAR(255), `imageUrl` VARCHAR(255) NOT NULL, `description` VARCHAR(255) NOT NULL, `price` DOUBLE PRECISION NOT NULL, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+    Executing (default): SHOW INDEX FROM `products`
+    <ref *1> Sequelize {
+
+![sequelize sync](img/Sequelize_Sync_NoTable.png)
+![sequelize sync](img/Sequelize-Sync.png)
+![sequelize sync](img/SequelizeSync-Create_table.png)
+
+Sequelize pluralise automatiquement.
+Deux nouveaux champs sont ajoutés par sequelize:
+
+![created updated](img/fields-created-updated.png)
+Sequelize gère automatiquement certains horodatage pour nous.
+
+### Insertion des données et création de produits
+
+admin.js controller, avant:
+
+    // import product's model
+    // import product's model
+    const Product = require("../models/product");
+
+    //Page admin ajout produit GET /admin/add-product
+    exports.getAddProduct = (req, res) => {
+    res.render("admin/edit-product", {
+        pageTitle: "Ajout d'articles",
+        path: "/admin/add-product",
+        // if editing false get add product form if true we get update product form => views ejs edit-product
+        editing: false,
+    });
+    };
+
+    // Page admin ajout de produit POST new product /admin/add-product
+    exports.postAddproduct = (req, res) => {
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const description = req.body.description;
+    const price = req.body.price;
+    // null for id because if we added a new product id his not define
+    const product = new Product(null, title, imageUrl, description, price);
+    product
+        .save()
+        // redirect only when insertion is finished
+        .then(res.redirect("/"))
+        .catch((err) => console.log(err));
+    };
+
+    exports.getEditProduct = (req, res) => {
+    // verification if req have an object (edit:key), l'on obtiendra la valeur souhaitée:
+    const editMode = req.query.edit;
+    if (!editMode) {
+        return res.redirect("/");
+    }
+    // Fetch product id to fecth product to edit (pre populatng form)
+    const prodId = req.params.productId;
+    // Use Product model to find product associate to the id with callback for the product to render the page
+    Product.findById(prodId, (product) => {
+        if (!product) {
+        return res.redirect("/");
+        }
+        res.render("admin/edit-product", {
+        pageTitle: "Edition d'articles",
+        path: "/admin/edit-product",
+        // edition if req's parameter
+        editing: editMode,
+        product: product,
+        });
+    });
+    };
+
+    exports.postEditProduct = (req, res) => {
+    // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
+    const prodId = req.body.productId;
+    const updatedTitle = req.body.title;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedDesc = req.body.description;
+    const updatedPrice = req.body.price;
+    // Create a new product instance (product updated) with new informations and call save() of product's model
+    const updatedProduct = new Product(
+        prodId,
+        updatedTitle,
+        updatedImageUrl,
+        updatedDesc,
+        updatedPrice
+    );
+    // call save method to save new instance with updated information's product
+    updatedProduct.save();
+    res.redirect("/admin/products");
+    };
+    // cosntruire et remplacer le produit existant
+
+    exports.getProducts = (req, res) => {
+    Product.fetchAll((products) => {
+        res.render("admin/products", {
+        prods: products,
+        pageTitle: "Articles",
+        path: "/admin/products",
+        });
+    });
+    };
+
+    exports.postDeleteProduct = (req, res) => {
+    // extract prod id to delete from the request body
+    const prodId = req.body.productId;
+    console.log(prodId);
+
+    Product.deleteById(prodId);
+    res.redirect("/admin/products");
+    };
+Ajout de produit:
+
+![create new product](img/AddProduct.png)
+![create new product](img/createNewProduct.png)
+![create new product](img/CreateNewProductPost.png)
+![create new product](img/CreateNewProductTerminal.png)
+
+### Récupération et recherche des produits
+
+shop.js controller
+
+### Trouver un seul produit avec la condition where
+
+### Récupèrer les produits admin
+
+### Modifier les produits
+
+### Effacer des prduits
+
+### Créer un profil utilisateur
+
+### Ajouter une association un à plusieurs
+
+one to many:
+relation ou association.
+
+user: un user n'a qu'un seul panier => **has one** mais peut avoir plsuieurs commandes => **has many**. Il peut aussi avoir créé plusieurs produits **has many** (ne le possède pas l'a créé)
+cart
+order
+product: un produit appartient à plusieurs paniers(cart) et plusieurs commandes => **belongs to many**, plusieurs users peuvent ajouter le même produits dans leurs paniers.
+
+![associations](img/associations-table.jpg)
+![associations](img/Association.png)
+![associations](img/AssociationFK.png.png)
+
+    const express = require("express");
+    const bodyParser = require("body-parser");
+    const app = express();
+    const path = require("path");
+    const pageNotFoundController = require("./controllers/error");
+    // import connection bdd
+    const sequelize = require("./util/database");
+    // import models module
+    const Product = require("./models/product");
+    const User = require("./models/user");
+
+    // To use EJS with Express.
+    app.set("view engine", "ejs");
+    // config var globale pour pug sur notre app express lui dire où trouver le moteur de template
+    app.set("views", "views");
+
+    const adminRoutes = require("./routes/admin");
+    const shopRoutes = require("./routes/shop");
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+    // analyseur du corps de la req. Enregistre un middleware. Analyse en premier le coprs de la req
+    app.use(express.static(path.join(__dirname, "public")));
+    // middleware lecture seul
+    app.use("/admin", adminRoutes);
+    app.use(shopRoutes);
+
+    app.use(pageNotFoundController.get404Page);
+
+    // Association table db:
+    // a product is created by user(admin)
+    Product.belongsTo(User, {
+    // facultative
+    constraints: true,
+    // if user deleted product too =< cascade
+    onDelete: "Cascade",
+    });
+    // one user can create many products
+    User.hasMany(Product);
+
+    // Verify and sync models and tables in db. If table doesn't exist sequelize create table and sequelize define association
+    sequelize
+    // force true to force sequelize take all new information on table already created (association and create FK after create models user)
+    .sync({ force: true })
+    .then((result) => {
+        // see an object
+        // if sync db ok, server is open
+        app.listen(8080);
+    })
+    .catch((err) => console.log(err));
+
+### Créer et gérer un user
+
+    const express = require("express");
+    const bodyParser = require("body-parser");
+    const app = express();
+    const path = require("path");
+    const pageNotFoundController = require("./controllers/error");
+    // import connection bdd
+    const sequelize = require("./util/database");
+    // import models module
+    const Product = require("./models/product");
+    const User = require("./models/user");
+
+    // To use EJS with Express.
+    app.set("view engine", "ejs");
+    // config var globale pour pug sur notre app express lui dire où trouver le moteur de template
+    app.set("views", "views");
+
+    const adminRoutes = require("./routes/admin");
+    const shopRoutes = require("./routes/shop");
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+    // analyseur du corps de la req. Enregistre un middleware. Analyse en premier le coprs de la req
+    app.use(express.static(path.join(__dirname, "public")));
+    // middleware lecture seul
+    app.use("/admin", adminRoutes);
+    app.use(shopRoutes);
+
+    app.use(pageNotFoundController.get404Page);
+
+    // Association table db:
+    // a product is created by user(admin)
+    Product.belongsTo(User, {
+    // facultative
+    constraints: true,
+    // if user deleted product too =< cascade
+    onDelete: "Cascade",
+    });
+    // one user can create many products
+    User.hasMany(Product);
+
+    // Verify and sync models and tables in db. If table doesn't exist sequelize create table and sequelize define association
+    sequelize
+    // force true to force sequelize take all new information on table already created (association and create FK after create models user)
+    // .sync({ force: true })
+    .sync()
+    .then((result) => {
+        // create manually user to test. Return a promise
+        return User.findByPk(1);
+        // see an object
+    })
+    .then((user) => {
+        if (!user) {
+        return User.create({ username: "Aso", email: "Aso" });
+        }
+        return user;
+    })
+    .then((user) => {
+        console.log(user);
+        // if sync db ok and user reach, server is open
+        app.listen(8080);
+    })
+    .catch((err) => console.log(err));
+
+### Utiliser une méthode d'asssociation
+
+Associer les nouveaux produits créés à l'user connecté.
+Controller admin.js mise à jour postAddProduct, nous allons transmettre les informations de l'user associé.
+
+![test asso](img/testAssoUser.png)
+![test asso](img/TestAssoUser2.png)
+![test asso](img/TestAssoUser3.png)
+
+Actuellement, l'on récupère les infos de l'user manuellement.
+
+    // import product's model
+    const Product = require("../models/product");
+
+    //Page admin ajout produit GET /admin/add-product
+    exports.getAddProduct = (req, res) => {
+    res.render("admin/edit-product", {
+        pageTitle: "Ajout d'articles",
+        path: "/admin/add-product",
+        // if editing false get add product form if true we get update product form => views ejs edit-product
+        editing: false,
+    });
+    };
+
+    // Page admin ajout de produit POST new product /admin/add-product
+    exports.postAddproduct = (req, res) => {
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const description = req.body.description;
+    const price = req.body.price;
+    // use object user in req and method to create an associate product proprosed by sequelize with associations
+    req.user
+        .createProduct({
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        price: price,
+        })
+        // method create to sequelize create instance of models Product and save in db diffférent of build who don't save auto
+        // Product.create({
+        // title: title,
+        // imageUrl: imageUrl,
+        // description: description,
+        // price: price,
+        // associate user connecté at product userId in table and req.user.id = object sequelize user who have data of db to the user and method.
+        // userId: req.user.id,
+        // })
+        .then((result) => {
+        console.log("Created product");
+        res.redirect("/admin/products");
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Get product to update with btn modifier page /admin/edit-product
+    exports.getEditProduct = (req, res) => {
+    // verification if req have an object (edit:key):
+    const editMode = req.query.edit;
+    if (!editMode) {
+        return res.redirect("/");
+    }
+    // Fetch product id to fecth product to edit (pre populatng form)
+    const prodId = req.params.productId;
+    // Use Product model to find product associate to the id for the product to render the page
+    Product.findByPk(prodId)
+        .then((product) => {
+        if (!product) {
+            return res.redirect("/");
+        }
+        res.render("admin/edit-product", {
+            pageTitle: "Edition d'articles",
+            path: "/admin/edit-product",
+            // edition if req's parameter
+            editing: editMode,
+            product: product,
+        });
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Put product page /admin/edit-product/:id?edit=true
+    exports.postEditProduct = (req, res) => {
+    // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
+    const prodId = req.body.productId;
+    const updatedTitle = req.body.title;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedDesc = req.body.description;
+    const updatedPrice = req.body.price;
+    Product.findByPk(prodId)
+        .then((product) => {
+        product.title = updatedTitle;
+        product.imageUrl = updatedImageUrl;
+        product.description = updatedDesc;
+        product.price = updatedPrice;
+        // sequelize method to save in bdd. Return to return promise of save()
+        return product.save();
+        })
+        // promise for save
+        .then((result) => {
+        console.log("Produit mis à jour");
+        // to redirect when promise is finished, async
+        res.redirect("/admin/products");
+        })
+        // catch for all code
+        .catch((err) => console.log(err));
+    };
+
+    // Get all products page gestion admin produit /admin/products
+    exports.getProducts = (req, res) => {
+    Product.findAll()
+        .then((products) => {
+        res.render("admin/products", {
+            prods: products,
+            pageTitle: "Articles",
+            path: "/admin/products",
+        });
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Delete product /admin/product/:id
+    exports.postDeleteProduct = (req, res) => {
+    // extract prod id to delete from the request body
+    const prodId = req.body.productId;
+    Product.findByPk(prodId)
+        .then((product) => {
+        // return a promise
+        return product.destroy();
+        })
+        .then((result) => {
+        console.log("Produit supprimé!");
+        res.redirect("/admin/products");
+        })
+        .catch((err) => console.log(err));
+    };
+
+### Récupèrer des produits associés
+
+controller admin.js
+
+### Relations un à plusieurs et plusieurs à plusieurs
+
+Travail sur le panier(cart), du point de la relation un panier doit appartenir à un user, et un panier peut contenir un à plusieurs produits avec une quantité qui leur est associée.
+
+cart. js models avant:
+
+    
+    const fs = require("fs");
+    const path = require("path");
+
+    const p = path.join(__dirname, "..", "data", "cart.json");
+
+    module.exports = class Cart {
+    // Create a new cart to manage product not create new product => method addProduct use id of product added in the cart.
+    static addProduct(id, productPrice) {
+        // Fetch the previous cart:
+        fs.readFile(p, (err, fileContent) => {
+        // If error: no cart => create a new cart:
+        let cart = { products: [], totalPrice: 0 };
+        if (!err) {
+            cart = JSON.parse(fileContent);
+        }
+        // Analyze the cart => Find existing product:
+        // find product's position in the array to update cart with new quantity
+        const existingProductIndex = cart.products.findIndex(
+            (prod) => prod.id === id
+        );
+        const existingProduct = cart.products[existingProductIndex];
+        // Add new product or increase quantity
+        // if product doesn't exist in the cart, add new product with quantity:
+        let updatedProduct;
+        // if product exists in the cart, increasing
+        if (existingProduct) {
+            // use spread operatot to get all properties of the object find
+            updatedProduct = { ...existingProduct };
+            // increase product quantity
+            updatedProduct.qty = updatedProduct.qty + 1;
+            // update cart's list with old product increase
+            cart.products = [...cart.products];
+            // replace element increase in the product's list
+            cart.products[existingProductIndex] = updatedProduct;
+        } else {
+            // Create in the cart
+            updatedProduct = { id: id, qty: 1 };
+            // update cart's list product whit new and old product
+            cart.products = [...cart.products, updatedProduct];
+        }
+        // update cart's price
+        //   console.log(typeof productPrice);
+        //   console.log(typeof cart.totalPrice);
+        productPrice = parseFloat(productPrice);
+        //   cart.totalPrice = parseInt(cart.totalPrice);
+        cart.totalPrice += productPrice;
+        fs.writeFile(p, JSON.stringify(cart), (err) => {
+            console.log(err);
+        });
+        });
+    }
+
+    static deleteProduct(id, productPrice) {
+        fs.readFile(p, (err, fileContent) => {
+        if (err) {
+            // no cart to delete
+            return;
+        }
+        // old cart property in the new object
+        const updatedCart = { ...JSON.parse(fileContent) };
+        // search product's quantity with id of product to delete
+        const product = updatedCart.products.find((prod) => prod.id === id);
+        // verify if we have product and if not, don't continue instrcution because if we don't have product in cart and we want to delete a product (admin) =>  qty is an error
+        if (!product) {
+            return;
+        }
+        // store quantity in const
+        const productQty = product.qty;
+        // update products in the cart, we keep only products we don't need to be delete
+        updatedCart.products = updatedCart.products.filter(
+            (prod) => prod.id !== id
+        );
+        // update cart's total price
+        updatedCart.totalPrice =
+            updatedCart.totalPrice - productPrice * productQty;
+        // update BDD
+        fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
+            console.log(err);
+        });
+        });
+    }
+
+    static getCart(cb) {
+        fs.readFile(p, (err, fileContent) => {
+        const cart = JSON.parse(fileContent);
+        if (err) {
+            cb(null);
+        } else {
+            cb(cart);
+        }
+        });
+    }
+    };
+
+### Créer et récupèrer un panier
+
+shop.js controller
+
+![récupèrer les items du panier](img/GetCart.png)
 
