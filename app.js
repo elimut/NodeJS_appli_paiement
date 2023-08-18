@@ -43,6 +43,7 @@ app.use(
       db: sequelize,
     }),
     resave: false,
+    saveUninitialized: false,
   })
 );
 app.use((req, res, next) => {
@@ -84,8 +85,8 @@ Order.belongsToMany(Product, { through: OrderItem });
 // Verify and sync models and tables in db. If table doesn't exist sequelize create table and sequelize define association. Just config db
 sequelize
   // force true to force sequelize take all new information on table already created (association and create FK after create models user)
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then((_) => {
     // create manually user to test. Return a promise
     return User.findByPk(1);

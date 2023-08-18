@@ -31,8 +31,10 @@
                 </li>
             <% } %>
             <% if (isAuthenticated) { %>
-                <li class="main-header__item">
-                    <a class="<%= path === '/logout' ? 'active' : '' %>" href="/logout">Déconnexion</a>
+                <li class="main-header__item <%= path === '/logout' ? 'active' : '' %>">
+                    <form action="/logout" method="POST">
+                        <button type="submit">Déconnexion</button>
+                    </form>
                 </li>
             <% } %>
         </ul>
@@ -69,8 +71,10 @@
             </li>
         <% } %>
         <% if (isAuthenticated) { %>
-            <li class="mobile-nav__item">
-                <a class="<%= path === '/logout' ? 'active' : '' %>" href="/logout">Déconnexion</a>
+            <li class="mobile-nav__item <%= path === '/logout' ? 'active' : '' %>">
+                <form action="/logout" method="POST">
+                    <button type="submit">Déconnexion</button>
+                </form>
             </li>
         <% } %>
     </ul>

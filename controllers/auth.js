@@ -36,9 +36,13 @@ exports.postLogin = (req, res) => {
 // Post page logout /logout deconnection
 exports.postLogout = (req, res) => {
   // method of session's package on session object
-  req.sessionUser.destroy((err) => {
-    console.log(err);
-    // passed fonction call when session destroyed
-    res.redirect("/");
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      req.logout();
+      // passed fonction call when session destroyed
+      res.redirect("/");
+    }
   });
 };
