@@ -10,7 +10,7 @@ exports.getProducts = (req, res) => {
         pageTitle: "Articles",
         path: "/products",
         // user need to beauth to access
-        isAuthenticated: req.loggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -37,7 +37,7 @@ exports.getProduct = (req, res) => {
         pageTitle: product.title,
         path: "/products",
         // user need to beauth to access
-        isAuthenticated: req.loggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       })
     )
     .catch((err) => console.log(err));
@@ -52,8 +52,8 @@ exports.getIndex = (req, res) => {
         prods: products,
         pageTitle: "Boutique",
         path: "/",
-        // user need to beauth to access
-        isAuthenticated: req.loggedIn,
+        // user need to be auth to access
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -62,7 +62,7 @@ exports.getIndex = (req, res) => {
 // Get page panier /cart
 // use cart associate at connected user to get & render cart
 exports.getCart = (req, res) => {
-  req.user
+  req.sessionUser
     .getCart()
     .then((cart) => {
       return cart
@@ -73,7 +73,7 @@ exports.getCart = (req, res) => {
             path: "/cart",
             products: products,
             // user need to beauth to access
-            isAuthenticated: req.loggedIn,
+            isAuthenticated: req.session.isLoggedIn,
           });
         })
         .catch((err) => console.log(err));
@@ -88,7 +88,7 @@ exports.postCart = (req, res) => {
   let fetchedCart;
   let newQuantity = 1;
   // get cart of user
-  req.user
+  req.sessionUser
     .getCart()
     .then((cart) => {
       fetchedCart = cart;
@@ -130,7 +130,7 @@ exports.postCartDeleteProduct = (req, res) => {
   // extract id of product we want to delete in cart
   const prodId = req.body.productId;
   // access connected user's cart
-  req.user
+  req.sessionUser
     .getCart()
     .then((cart) => {
       return cart.getProducts({ where: { id: prodId } });
@@ -151,7 +151,7 @@ exports.postOrder = (req, res) => {
   // store cart
   let fetchedCart;
   // take all cart's products to store in order
-  req.user
+  req.sessionUser
     .getCart()
     .then((cart) => {
       fetchedCart = cart;
@@ -159,7 +159,7 @@ exports.postOrder = (req, res) => {
     })
     .then((products) => {
       // create order for user
-      return req.user
+      return req.sessionUser
         .createOrder()
         .then((order) => {
           // don't use through beacause different quantity for product. Use map to associate one product with respective field
@@ -185,7 +185,7 @@ exports.postOrder = (req, res) => {
 
 // Get page commande /orders with products
 exports.getOrders = (req, res) => {
-  req.user
+  req.sessionUser
     //  to see products. Indication for sequelize and views. order don't have key orderItem
     .getOrders({ include: ["products"] })
     .then((orders) => {
@@ -195,7 +195,7 @@ exports.getOrders = (req, res) => {
         // all commandes fetch
         orders: orders,
         // user need to beauth to access
-        isAuthenticated: req.loggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));

@@ -25,9 +25,16 @@
                     </a>
                 </li>
             <% } %>
-            <li class="main-header__item">
-                <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Se connecter</a>
-            </li>
+            <% if (!isAuthenticated) { %>
+                <li class="main-header__item">
+                    <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Connexion</a>
+                </li>
+            <% } %>
+            <% if (isAuthenticated) { %>
+                <li class="main-header__item">
+                    <a class="<%= path === '/logout' ? 'active' : '' %>" href="/logout">Déconnexion</a>
+                </li>
+            <% } %>
         </ul>
     </nav>
 </header>
@@ -56,8 +63,15 @@
                 </a>
             </li>
         <% } %>
-        <li class="mobile-nav__item">
-            <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Se connecter</a>
-        </li>
+        <% if (!isAuthenticated) { %>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Connexion</a>
+            </li>
+        <% } %>
+        <% if (isAuthenticated) { %>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/logout' ? 'active' : '' %>" href="/logout">Déconnexion</a>
+            </li>
+        <% } %>
     </ul>
 </nav>

@@ -1,3 +1,5 @@
+const User = require("../models/user");
+
 // Get page login /login
 exports.getLogin = (req, res) => {
   // console.log(req.get("Cookie").split("=")[1]);
@@ -17,7 +19,26 @@ exports.getLogin = (req, res) => {
 // Post page login /login authentification
 exports.postLogin = (req, res) => {
   // define cookie to store auth information (set-cookie nom réservé) values cookie = paie key value
-  res.setHeader("Set-Cookie", "loggedIn=true; HttpOnly");
-  // if user login => redirect
-  res.redirect("/");
+  // res.setHeader("Set-Cookie", "loggedIn=true; Expires=");
+  User.findByPk(1)
+    // store user in a request
+    .then((user) => {
+      // user object JS in db and sequelize's objetc to, with methods...
+      // use session middleware
+      req.session.isLoggedIn = true;
+      // req.session.user = user;
+      res.redirect("/");
+    })
+    // to continue if had an user
+    .catch((err) => console.log(err));
+};
+
+// Post page logout /logout deconnection
+exports.postLogout = (req, res) => {
+  // method of session's package on session object
+  req.sessionUser.destroy((err) => {
+    console.log(err);
+    // passed fonction call when session destroyed
+    res.redirect("/");
+  });
 };

@@ -2409,5 +2409,54 @@ De façon générale l'on utilise des packages pour gérer les cookies.
 
 ### Session?
 
+Stocker dans le front les données est une mauvaise idée, nous les stockons alors dans le back end avec une session.
+Une session est une nouvelle contruction.
+Nous partageons les informations entre toutes les demandes du même user.
+Stockage dans le serveur, stockage dans la mémoire qui est assez similaire au stockage dans cette variable, mais nous allons passer à un stockage de session différent, la base de données.
+Nous avons besoin d'un élément d'information important.
+Un client doit indiquer au serveur à quelle session il appartient car la session sera à la fin juste une entrée stockée en mémoire ou dans une base de données.
+Nous utiliserons un cookie, où nous stockerons l'id de la session.
+La valeur stockée sera un id hashé, avec un algorithmr où seul le serveur peut confirmer qu'il n'a pas été manipulé. Stockage de l'id de manière cryptée.
+Les sessions sont stockées dans le server side et les cookies dans le client side.
 
+### Implémeter une session avec un middleware
 
+Pour implémenter une session l'on a besoin d'un package tiers.
+
+npm install --save express-session
+
+    // execute session like a fonction, arg config session
+    // secret to hash value store in session
+    // resave reegister option false to not register session to each req only if somthing change in session
+    // saveUnInitialized false none session will be register for a req 
+    app.use(session({ secret: "donttouch", resave: false}));
+
+### Utiliser le middleware de sessin
+
+auth.js controller
+
+    // Get page login /login
+    exports.getLogin = (req, res) => {
+    // console.log(req.get("Cookie").split("=")[1]);
+    //loggedIn=true
+    //split to fetch after =. Extract header of cookie, value oh cookie
+    // const isLoggedIn = req.get("Cookie").split("=")[1];
+    res.render("auth/login", {
+        pageTitle: "Se connecter",
+        path: "/login",
+        // user need to beauth to access
+        // isAuthenticated: req.isLoggedIn,
+        // isAuthenticated: isLoggedIn,
+        isAuthenticated: false,
+    });
+    };
+
+    // Post page login /login authentification
+    exports.postLogin = (req, res) => {
+    // define cookie to store auth information (set-cookie nom réservé) values cookie = paie key value
+    res.setHeader("Set-Cookie", "loggedIn=true; Expires=");
+    // if user login => redirect
+    res.redirect("/");
+    };
+
+connect.sid nouveau cookie pour un cookie d'id de session

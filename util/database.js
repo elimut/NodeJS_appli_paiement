@@ -4,6 +4,7 @@ const Sequelize = require("sequelize");
 const sequelize = new Sequelize("boutique", "root", "root", {
   dialect: "mysql",
   host: "localhost",
+  storage: "./sessions.mysql",
 });
 
 module.exports = sequelize;

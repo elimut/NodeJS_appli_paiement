@@ -10,7 +10,7 @@ exports.getAddProduct = (req, res) => {
     // if editing false get add product form if true we get update product form => views ejs edit-product
     editing: false,
     // user need to beauth to access
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -22,7 +22,7 @@ exports.postAddproduct = (req, res) => {
   const description = req.body.description;
   const price = req.body.price;
   // use object user in req (store in app.js) and method to create an associate product proprosed by sequelize with associations
-  req.user
+  req.sessionUser
     .createProduct({
       title: title,
       imageUrl: imageUrl,
@@ -47,7 +47,7 @@ exports.getEditProduct = (req, res) => {
   const prodId = req.params.productId;
   // Use Product model to find product associate to the id for the product to render the page
   // reach page only for user connected
-  req.user
+  req.sessionUser
     // fetch product to edit
     .getProducts({ where: { id: prodId } })
     // Product.findByPk(prodId)
@@ -64,7 +64,7 @@ exports.getEditProduct = (req, res) => {
         editing: editMode,
         product: product,
         // user need to beauth to access
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -100,7 +100,7 @@ exports.postEditProduct = (req, res) => {
 // Get all products page gestion admin produit /admin/products
 exports.getProducts = (req, res) => {
   // find products for the user connected
-  req.user
+  req.sessionUser
     .getProducts()
     .then((products) => {
       res.render("admin/products", {
@@ -108,7 +108,7 @@ exports.getProducts = (req, res) => {
         pageTitle: "Articles",
         path: "/admin/products",
         // user need to beauth to access
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));

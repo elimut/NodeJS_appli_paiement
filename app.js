@@ -1,6 +1,10 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const app = express();
+const session = require("express-session");
+// product constructor fonction store in db
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+
+const bodyParser = require("body-parser");
 const path = require("path");
 const pageNotFoundController = require("./controllers/error");
 // import connection bdd
@@ -27,20 +31,25 @@ const authRoutes = require("./routes/auth");
 app.use(bodyParser.urlencoded({ extended: false }));
 // To tell express where are static files
 app.use(express.static(path.join(__dirname, "public")));
-
-//  middleware to reach db ans fecth user with findById. Execute for an incoming request
+// execute session like a fonction, arg config session
+// secret to hash value store in session
+// resave reegister option false to not register session to each req only if somthing change in session
+// saveUnInitialized false none session will be register for a req
+// app.use(session({ secret: "donttouch", resave: false }));
+app.use(
+  session({
+    secret: "keayboard cat",
+    store: new SequelizeStore({
+      db: sequelize,
+    }),
+    resave: false,
+  })
+);
 app.use((req, res, next) => {
-  User.findByPk(1)
-    // store user in a request
-    .then((user) => {
-      // user object JS in db and sequelize's objetc to, with methods...
-      req.user = user;
-      next();
-    })
-    // to continue if had an user
-    .catch((err) => console.log(err));
+  const sessionUser = User.build({ ...req.session.user });
+  req.sessionUser = sessionUser;
+  next();
 });
-
 // Middleware to fetch routes to express
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
