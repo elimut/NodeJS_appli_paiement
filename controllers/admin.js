@@ -9,6 +9,8 @@ exports.getAddProduct = (req, res) => {
     path: "/admin/add-product",
     // if editing false get add product form if true we get update product form => views ejs edit-product
     editing: false,
+    // user need to beauth to access
+    isAuthenticated: req.isLoggedIn,
   });
 };
 
@@ -61,6 +63,8 @@ exports.getEditProduct = (req, res) => {
         // edition if req's parameter
         editing: editMode,
         product: product,
+        // user need to beauth to access
+        isAuthenticated: req.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -103,6 +107,8 @@ exports.getProducts = (req, res) => {
         prods: products,
         pageTitle: "Articles",
         path: "/admin/products",
+        // user need to beauth to access
+        isAuthenticated: req.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));

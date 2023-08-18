@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 // mini app express liée à express
 const adminController = require("../controllers/admin");
+
 // /admin/add-product accès page
 router.get("/add-product", adminController.getAddProduct);
 // ref à la fonction getAdd pas de parenthèses, express doit prendre cette fonction et la stocker puis dmd de page l'exécuter

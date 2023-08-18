@@ -9,7 +9,9 @@ const sequelize = require("./util/database");
 const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
-const CartItem = require("./models/cart-items");
+const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 // To use EJS with Express
 app.set("view engine", "ejs");
@@ -19,6 +21,7 @@ app.set("views", "views");
 // Import routes to execute
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 // Analyse body res
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -41,6 +44,7 @@ app.use((req, res, next) => {
 // Middleware to fetch routes to express
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 app.use(pageNotFoundController.get404Page);
 
 // Associations tables db:
@@ -61,12 +65,18 @@ Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 // a product can be in different cart. This two relations can be avaible with intermediaire table who store id product and id cart = second args (tell sequelize where store
 Product.belongsToMany(Cart, { through: CartItem });
+// order belongs to one user
+Order.belongsTo(User);
+// one user can have many orders: one to many relationship
+User.hasMany(Order);
+// one command can belong many products
+Order.belongsToMany(Product, { through: OrderItem });
 
 // Verify and sync models and tables in db. If table doesn't exist sequelize create table and sequelize define association. Just config db
 sequelize
   // force true to force sequelize take all new information on table already created (association and create FK after create models user)
-  // .sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  // .sync()
   .then((_) => {
     // create manually user to test. Return a promise
     return User.findByPk(1);
@@ -74,7 +84,7 @@ sequelize
   })
   .then((user) => {
     if (!user) {
-      return User.create({ username: "Aso", email: "Aso" });
+      return User.create({ username: "aso", email: "aso@gmail.com" });
     }
     return user;
   })

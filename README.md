@@ -752,7 +752,7 @@ Il est possible de définir des scripts dans Node.
 Permet d'installer des packages tiers supplémentaires, non inclus dans le core.
 
 npm init => package.json 
-json type spécial de données qui ressemble essentiellement à des objets JS, mais clés et valeurs sont toutes les deux placés dans des "", sauf number, arry et bool.
+json type spécial de données qui ressemble essentiellement à des objets JS, mais clés et valeurs sont toutes les deux placés dans des "", sauf number, array et bool.
 L'on y a une section de scripts par défaut.
 Ajout de start node app.js => cmd npm start
 
@@ -2327,4 +2327,87 @@ cart. js models avant:
 shop.js controller
 
 ![récupèrer les items du panier](img/GetCart.png)
+
+### Ajouter un nouveau produit dans le panier
+
+### Ajouter un produit existant au panier et récupération du panier
+
+### Supprimer les produits du panier
+
+### Ajouter un autre model
+
+Commandes avec un bsouton de paiement.
+Création model order et orde-item, table intermédiaire entre user et product.
+
+### Stocker les produits du panier comme produits de commandes
+
+/create-order
+
+### Réinitialiser le panier et récupérer les commandes
+
+Effacer le panier après avoir édité la commande.
+
+## Sessions et cookies
+
+Stockage des données en mémoire ou même côté cleint, dans le navigateur.
+
+### Cookies?
+
+User utilisant un navigateur, et nous avons notre serveur sur lequel notre application de NodeJS fonctionne.
+
+L'user intéragit avec l'interface avec les vues que nous rendons grâce au moteur de templates ejs, et dans ces vus nous avons des formulaires comme celui pour se logger, nous soumettons une requête à notre serveur NodeJS.
+Cette requête nous oblige à stocker une sorte de données dans le navigateur.
+Nous vpoulons stocker les informations que l'user est connecté afin que lorsque recharge la page, donc techniquement une nouvelle requête est envoyée, nous avons toujours cette information.
+Pour cela, nous renvoyons un **cookie** avec la réponse.
+L'on peut stocker ces informations dans le navigateur, dans le frontend, l'nevironnement avec lequel l'user intéragit et nous pouvons l'envoyer avec des demandes ultérieures pour y inclure le cookie pour envoyer les données que nous avons stockées.
+Les cooies sont donc stockées dans le client side.
+
+### Formulaire de connexion
+
+### Ajout de la connexion basée sur les demandes
+
+### Paramètrage d'un cookie
+
+Variable globale stockée dans un fichier supplémentaire, que l'on exporte à partir de ce fichier, et qui sera modifiée.
+La variable survivra aux cycles de demande. Mais elle serait partagée entre toutes les ddemandes, partagée entre tous les user => cookie.
+L'on peut stocker des données dans le navigateur d'un seul user, données personnalisées pour cet user sans affecter les autres user, et qui peut être envoyé avec des demandes pour dire par exemple que l'authentification est bonne.
+
+    // Get page login /login
+    exports.getLogin = (req, res) => {
+    // console.log(req.get("Cookie").split("=")[1]);
+    //loggedIn=true
+    //split to fetch after =. Extract header of cookie, value oh cookie
+    const isLoggedIn = req.get("Cookie").split("=")[1];
+    res.render("auth/login", {
+        pageTitle: "Se connecter",
+        path: "/login",
+        // user need to beauth to access
+        // isAuthenticated: req.isLoggedIn,
+        isAuthenticated: isLoggedIn,
+    });
+    };
+
+    // Post page login /login authentification
+    exports.postLogin = (req, res) => {
+    // define cookie to store auth information (set-cookie nom réservé) values cookie = peer valu keys
+    res.setHeader("Set-Cookie", "loggedIn=true");
+    // if user login => redirect
+    res.redirect("/");
+    };
+
+
+### Manipulation des cookies
+
+Il existe des packages tiers pour extraire les cookies.
+Dans notre approche il y a un problème, je peux accèder aux cookies, l'on peut les changer dans le navigateur.
+
+### Configuration des cookies
+
+Un cookie peut être envoyé à une autre page.
+L'on peut ajouter plusieurs cookies, date d'expiration (sans date il expire quand on ferme le navigateur; Expires=), Secure pour fonctionner seulement avec https, HttpOnly => cela signifie que l'on ne peut pas accèder à la valeur du cookie via JS côté client cela peut être un mécanisme de sécurité car il protège contre attaques de scripts intersites car maintenant côté client js où quelqu'un aurait pu injecter du code malveillant ne peut pas lire la valeur du cookie.
+De façon générale l'on utilise des packages pour gérer les cookies.
+
+### Session?
+
+
 

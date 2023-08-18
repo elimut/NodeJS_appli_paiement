@@ -1,25 +1,33 @@
-<!-- Panier -->
 <%- include('../includes/head.ejs') %>
-</head>
+    <link rel="stylesheet" href="/css/cart.css">
+    </head>
 
-<body>
-    <%-include ('../includes/navigation.ejs') %>
-    <main>
-        <!-- check if have product to display them. shop controller-->
-        <% if(products.length > 0) { %>
-            <ul>
-                <% products.forEach(p => { %>
-                    <li>
-                        <p><%= p.productData.title %>(<%= p.qty %>)</p>
-                        <form action="/cart-delete-item" method="POST">
-                            <input type="hidden" value="<%= p.productData.id %>" name="productId">
-                            <button class="btn" type="submit" >Supprimer</button>
-                        </form>
-                    </li>
-               <% }) %>
-            </ul>
-        <% } else { %>
-            <h2>Panier vide!</h2>
-        <% } %>
-    </main>
-    <%-include ('../includes/end.ejs') %>
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+        <main>
+            <h1>Panier</h1>
+            <% if (products.length > 0) { %>
+                <ul class="cart__item-list">
+                    <% products.forEach(p => { %>
+                        <li class="cart__item">
+                            <h2><%= p.title %></h2>
+                            <h2>Quantity: <%= p.cartItem.quantity %></h2>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" value="<%= p.id %>" name="productId">
+                                <button class="btn danger" type="submit">Supprimer</button>
+                            </form>
+                        </li>
+
+                    <% }) %>
+                </ul>
+                <hr>
+                <div class="centered">
+                    <form action="/create-order" method="POST">
+                        <button type="submit" class="btn">Commander</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <h1>Panier vide!</h1>
+            <% } %>
+        </main>
+        <%- include('../includes/end.ejs') %>

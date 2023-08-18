@@ -2,21 +2,22 @@ const express = require("express");
 const router = express.Router();
 const shopController = require("../controllers/shop");
 
+// Récupération des modules pour définir les routes
 router.get("/", shopController.getIndex);
-// Route vers accueil /
+// get page accueil /
 router.get("/products", shopController.getProducts);
-// liste de produits /products
+// gel products's list /products
 router.get("/products/:productId", shopController.getProduct);
-// afficher les détails d'un livre /products/:productId
+// get details of product /products/:productId
 router.post("/cart", shopController.postCart);
-// post panier /cart
+// add product on cart /cart
 router.get("/cart", shopController.getCart);
-//panier /cart
+// access cart /cart
 router.post("/cart-delete-item", shopController.postCartDeleteProduct);
 // delete cart's product
-router.get("/checkout", shopController.getCheckout);
-//paiement /checkout
+router.post("/create-order", shopController.postOrder);
+// btn commander on cart to store cartItems in orderItems /create-order
 router.get("/orders", shopController.getOrders);
-//commandes /orders
+//  access commands /orders
 
 module.exports = router;
