@@ -2460,3 +2460,40 @@ auth.js controller
     };
 
 connect.sid nouveau cookie pour un cookie d'id de session
+value s%3ARgHsyAWc_WjsxgX7rBYro6_dfJz2K_cl.d9sscfgTGZ7jT3QZ40V%2F9dK7KPCXqUwc7ox6rD2ee%2B8
+
+Nous pouvons aller sur une page différente et revenir.
+
+    // Get page login /login
+    exports.getLogin = (req, res) => {
+    // console.log(req.get("Cookie").split("=")[1]);
+    //loggedIn=true
+    //split to fetch after =. Extract header of cookie, value oh cookie
+    // const isLoggedIn = req.get("Cookie").split("=")[1];
+    res.render("auth/login", {
+        pageTitle: "Se connecter",
+        path: "/login",
+        // user need to beauth to access
+        // isAuthenticated: req.isLoggedIn,
+        // isAuthenticated: isLoggedIn,
+        isAuthenticated: false,
+    });
+    };
+
+    // Post page login /login authentification
+    exports.postLogin = (req, res) => {
+    // define cookie to store auth information (set-cookie nom réservé) values cookie = paie key value
+    // res.setHeader("Set-Cookie", "loggedIn=true; Expires=");
+    // use session middleware
+    req.session.isLoggedIn = true;
+    // if user login => redirect
+    res.redirect("/");
+    };
+
+### Utiliser la base de données pour stocker les sessions
+
+npm install --save connect-session-sequelize
+
+### Supprimer un cookie
+
+navigation views
