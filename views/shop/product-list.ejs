@@ -22,8 +22,10 @@
                     </div>
                     <div class="card__actions">
                         <a href="/products/<%= products.id %>" class="btn">Détails</a>
-                        <%- include('../includes/add-to-cart.ejs', {product: products}) %>
+                        <% if (isAuthenticated) { %>
+                         <%- include('../includes/add-to-cart.ejs', {product: products}) %>
                         <!-- deuxième arg car ne reçoit pas la var product car include dans une boucle -->
+                        <% } %>
                     </div>
                 </article>
             <% } %>

@@ -40,7 +40,7 @@ exports.postLogout = (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      req.logout();
+      // req.end();
       // passed fonction call when session destroyed
       res.redirect("/");
     }
