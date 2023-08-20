@@ -25,8 +25,8 @@ exports.postLogin = (req, res) => {
     .then((user) => {
       // user object JS in db and sequelize's objetc to, with methods...
       // use session middleware
+      req.session.user = user;
       req.session.isLoggedIn = true;
-      // req.session.user = user;
       res.redirect("/");
     })
     // to continue if had an user
@@ -40,8 +40,6 @@ exports.postLogout = (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      // req.end();
-      // passed fonction call when session destroyed
       res.redirect("/");
     }
   });

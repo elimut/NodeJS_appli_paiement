@@ -9,7 +9,7 @@ router.get("/products", shopController.getProducts);
 // gel products's list /products
 router.get("/products/:productId", shopController.getProduct);
 // get details of product /products/:productId
-router.post("/cart", shopController.postCart);
+// router.post("/cart", shopController.postCart);
 // add product on cart /cart
 router.get("/cart", shopController.getCart);
 // access cart /cart

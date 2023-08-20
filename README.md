@@ -2497,3 +2497,4 @@ npm install --save connect-session-sequelize
 ### Supprimer un cookie
 
 navigation views
+Le cookie persiste mais aucune session ne correpond car supprimée.

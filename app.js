@@ -46,11 +46,24 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 app.use((req, res, next) => {
   const sessionUser = User.build({ ...req.session.user });
   req.sessionUser = sessionUser;
-  next();
+  if (!req.session.user) {
+    return next();
+  }
+  User.findByPk(sessionUser.id)
+    // store user in a request
+    .then((user) => {
+      req.user = user;
+      // console.log(user);
+      next();
+    })
+    // to continue if had an user
+    .catch((err) => console.log(err));
 });
+
 // Middleware to fetch routes to express
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

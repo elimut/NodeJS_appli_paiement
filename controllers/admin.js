@@ -22,12 +22,13 @@ exports.postAddproduct = (req, res) => {
   const description = req.body.description;
   const price = req.body.price;
   // use object user in req (store in app.js) and method to create an associate product proprosed by sequelize with associations
-  req.sessionUser
+  req.user
     .createProduct({
       title: title,
       imageUrl: imageUrl,
       description: description,
       price: price,
+      userId: req.user,
     })
     .then((_) => {
       console.log("Created product");
@@ -47,7 +48,7 @@ exports.getEditProduct = (req, res) => {
   const prodId = req.params.productId;
   // Use Product model to find product associate to the id for the product to render the page
   // reach page only for user connected
-  req.sessionUser
+  req.user
     // fetch product to edit
     .getProducts({ where: { id: prodId } })
     // Product.findByPk(prodId)
@@ -100,7 +101,7 @@ exports.postEditProduct = (req, res) => {
 // Get all products page gestion admin produit /admin/products
 exports.getProducts = (req, res) => {
   // find products for the user connected
-  req.sessionUser
+  req.user
     .getProducts()
     .then((products) => {
       res.render("admin/products", {

@@ -1,5 +1,6 @@
 // import models to use
 const Product = require("../models/product");
+const User = require("../models/user");
 
 // Get all products  /products page article
 exports.getProducts = (req, res) => {
@@ -20,13 +21,13 @@ exports.getProducts = (req, res) => {
 exports.getProduct = (req, res) => {
   // productId extract from hidden input in view product ejs
   const prodId = req.params.productId;
-  // Product.findAll({ where: { id: prodId } })
+  // Product.findByPk({ where: { id: prodId } })
   //   // return an array with a lot of element. Interesting by first element
-  //   .then((products) => {
-  //     console.log(products);
+  //   .then((product) => {
+  //     console.log(product);
   //     res.render("shop/product-detail", {
   //       product: products[0],
-  //       pageTitle: `Détails de l'article ${products[0].title}`,
+  //       pageTitle: `Détails de l'article ${product[0].title}`,
   //       path: "/products",
   //     });
   //   });
@@ -62,7 +63,7 @@ exports.getIndex = (req, res) => {
 // Get page panier /cart
 // use cart associate at connected user to get & render cart
 exports.getCart = (req, res) => {
-  req.sessionUser
+  req.user
     .getCart()
     .then((cart) => {
       return cart
@@ -82,48 +83,62 @@ exports.getCart = (req, res) => {
 };
 
 // Add a new product in cart / or /products
-exports.postCart = (req, res) => {
-  // fetch id product to add
-  const prodId = req.body.productId;
-  let fetchedCart;
-  let newQuantity = 1;
-  // get cart of user
-  req.sessionUser
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      // is the product already exist in cart to increase quantity or add product if not
-      // fetch product to add
-      return cart.getProducts({ where: { id: prodId } });
-    })
+// exports.postCart = (req, res) => {
+//   // fetch id product to add
+//   const prodId = req.body.productId;
+//   let fetchedCart;
+//   let newQuantity = 1;
+//   const user = req.user;
+//   // get cart of user
+//   User.findByPk(user)
+//     .getCart()
+//     .then((cart) => {
+//       fetchedCart = cart;
+//       console.log(cart);
+//       // is the product already exist in cart to increase quantity or add product if not
+//       // fetch product to add
+//       return cart.getProducts({ where: { id: prodId } });
+//     })
 
-    .then((products) => {
-      // verify if product exist and store in var (array need just first element of array )
-      let product;
-      if (products.length > 0) {
-        product = products[0];
-      }
-      // if have product increase quantity
-      if (product) {
-        // fetch old quantity with accessing to between table
-        const oldQuantity = product.cartItem.quantity;
-        newQuantity = oldQuantity + 1;
-        return product;
-      }
-      // if product doesn't exist in cart, search data product to add
-      return Product.findByPk(prodId);
-    })
-    .then((product) => {
-      // through to tell sequelize we need key to between table cartItem
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity },
-      });
-    })
-    .then(() => {
-      res.redirect("/cart");
-    })
-    .catch((err) => console.log(err));
-};
+//     .then((products) => {
+//       // verify if product exist and store in var (array need just first element of array )
+//       let product;
+//       if (products.length > 0) {
+//         product = products[0];
+//       }
+//       // if have product increase quantity
+//       if (product) {
+//         // fetch old quantity with accessing to between table
+//         const oldQuantity = product.cartItem.quantity;
+//         newQuantity = oldQuantity + 1;
+//         return product;
+//       }
+//       // if product doesn't exist in cart, search data product to add
+//       return Product.findByPk(prodId);
+//     })
+//     .then((product) => {
+//       // through to tell sequelize we need key to between table cartItem
+//       return fetchedCart.addProduct(product, {
+//         through: { quantity: newQuantity },
+//       });
+//     })
+//     .then(() => {
+//       res.redirect("/cart");
+//     })
+//     .catch((err) => console.log(err));
+// };
+
+// exports.postCart = (req, res, next) => {
+//   const prodId = req.body.productId;
+//   Product.findByPk(prodId)
+//     .then((product) => {
+//       return req.user.addToCart(product);
+//     })
+//     .then((result) => {
+//       console.log(result);
+//       res.redirect("/cart");
+//     });
+// };
 
 // Delete product from cart /cart btn supprimer
 exports.postCartDeleteProduct = (req, res) => {
