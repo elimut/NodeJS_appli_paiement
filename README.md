@@ -2564,6 +2564,14 @@ npm install --save nodemailer
 
 Pour intéragir avec senGrid:
 npm install --save nodemailer-sendgrid-transport
+
 ### Utiliser nodeMailer
 
+## Authentification avancée
 
+### Réinitialiser les mots de passe
+
+### Implémentation de la logique du token
+
+Il faut créer un jeton unique qui a une date d'expiration que nous allons stocker dans la bdd afin que le lien sur lequel nous n'avons pas cliqué contient le jeton, et nous pouvons vérifier que l'user l'a bien obtenu.
+Le token est nécessaire pour être mis dans le mail que nous allons lui envoyer.

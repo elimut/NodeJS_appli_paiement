@@ -60,9 +60,10 @@ exports.getIndex = (req, res) => {
 // Get page panier /cart
 // use cart associate at connected user to get & render cart
 exports.getCart = (req, res) => {
-  req.user
+  req.sessionUser.id
     .getCart()
     .then((cart) => {
+      console.log(cart);
       return cart
         .getProducts()
         .then((products) => {
@@ -84,11 +85,13 @@ exports.postCart = (req, res) => {
   let fetchedCart;
   let newQuantity = 1;
   const user = req.sessionUser.id;
-  console.log(user);
+  // console.log(user);
   // get cart of user
   User.findByPk(user)
-    .then((user) => {
-      return user.getCart();
+    .then((userId) => {
+      console.log(userId);
+      return userId.getCart();
+      // return user;
     })
     // .getCart()
     .then((cart) => {

@@ -1,17 +1,26 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
-const sendgridTransport = require("nodemailer-sendgrid-transport");
+// const sendgridTransport = require("nodemailer-sendgrid-transport");
 
 //  Initialize way to send email. Send a configuration will be use by nodemailer
-const transporter = nodemailer.createTransport(
-  sendgridTransport({
-    auth: {
-      api_key:
-        "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",
-    },
-  })
-);
+// const transporter = nodemailer.createTransport(
+//   sendgridTransport({
+//     auth: {
+//       api_key:
+//         "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",
+//     },
+//   })
+// );
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  // host: "sandbox.smtp.mailtrap.io",
+  // port: 2525,
+  auth: {
+    user: "vandingenenannesophie@gmail.com",
+    pass: "Xenoturbella5916",
+  },
+});
 
 // Get page login /login
 exports.getLogin = (req, res) => {
@@ -125,5 +134,21 @@ exports.postLogout = (req, res) => {
     } else {
       res.redirect("/");
     }
+  });
+};
+
+// Reset password
+exports.getReset = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Réinitialiser le mot de passe",
+    isAuthenticated: false,
+    errorMessage: message,
   });
 };

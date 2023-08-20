@@ -10,22 +10,15 @@
         <% if (errorMessage) { %>
             <div class="user-message"><%= errorMessage %></div>
         <% } %>
-        <form class="login-form" action="/login" method="POST">
+        <form class="login-form" action="/reset" method="POST">
             <div class="form-control">
                 <label for="email">E-mail</label>
                 <!-- value: getProduct in controller can get product information/ if in edit mode => vue value to update product -->
                 <input type="email" name="email" id="email">
             </div>
-            <div class="form-control">
-                <label for="password">Mot de passe</label>
-                <input type="password" name="password" id="password">
-            </div>
             <!-- generate csrf token, name to package can find token -->
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button class="btn" type="submit">Connexion</button>
+            <button class="btn" type="submit">Réinitialiser le mot de passe</button>
         </form>
-        <div class="centered">
-            <a href="/reset">Mot de passe oublié</a>
-        </div>
     </main>
 <%- include('../includes/end.ejs') %>
