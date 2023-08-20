@@ -111,6 +111,9 @@ form {
 
 .mobile-nav__item a,
 .mobile-nav__item button {
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
   border: none;
   text-decoration: none;
   color: black;
@@ -120,7 +123,7 @@ form {
 
 .mobile-nav__item a:active,
 .mobile-nav__item a:hover,
-.mobile-nav__item a.active
+.mobile-nav__item a.active,
 .mobile-nav__item button:hover,
 .mobile-nav__item button:active {
   background: #00695c;
@@ -229,6 +232,15 @@ form {
   color: white;
 }
 
+.user-message {
+  margin: auto;
+  width: 90%;
+  border: 1px solid rgb(120, 31, 108);
+  background-color: rgb(165, 44, 179);
+  padding: 1rem;
+  border-radius: 3px;
+  text-align: center;
+}
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;
@@ -236,5 +248,9 @@ form {
 
   #side-menu-toggle {
     display: none;
+  }
+
+  .user-message {
+    width: 30rem;
   }
 }

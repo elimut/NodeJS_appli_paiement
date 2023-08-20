@@ -3,6 +3,8 @@ const app = express();
 const session = require("express-session");
 // product constructor fonction store in db
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const csrf = require("csurf");
+const flash = require("connect-flash");
 
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -26,6 +28,9 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+// Initialize csrf protection. value session default. Middleware
+const csrfProtection = csrf();
 
 // Analyse body res
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -64,7 +69,23 @@ app.use((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
-// Middleware to fetch routes to express
+// Middlewares:
+// middleware protection csrf
+app.use(csrfProtection);
+// middleware to generate error message
+app.use(flash());
+
+// Tp past this fields in rendered views
+app.use((req, res, next) => {
+  // define local variable, to all req this fields'll be define to the views who render
+  // user need to be auth to access
+  (res.locals.isAuthenticated = req.session.isLoggedIn),
+    // method provided by middleware to generate csrf token store in crsfToken, after we can use on views
+    (res.locals.csrfToken = req.csrfToken());
+  next();
+});
+
+// middleware to fetch routes to express
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -100,20 +121,20 @@ sequelize
   // force true to force sequelize take all new information on table already created (association and create FK after create models user)
   // .sync({ force: true })
   .sync()
-  .then((_) => {
-    // create manually user to test. Return a promise
-    return User.findByPk(1);
-    // see an object
-  })
-  .then((user) => {
-    if (!user) {
-      return User.create({ username: "aso", email: "aso@gmail.com" });
-    }
-    return user;
-  })
-  .then((user) => {
-    return user.createCart({});
-    // if sync db ok and user reach, server is open
-  })
-  .then((cart) => app.listen(8080))
+  // .then((_) => {
+  //   // create manually user to test. Return a promise
+  //   return User.findByPk(1);
+  //   // see an object
+  // })
+  // .then((user) => {
+  //   if (!user) {
+  //     return User.create({ username: "aso", email: "aso@gmail.com" });
+  //   }
+  //   return user;
+  // })
+  // .then((user) => {
+  //   return user.createCart({});
+  //   // if sync db ok and user reach, server is open
+  // })
+  .then((result) => app.listen(8080))
   .catch((err) => console.log(err));

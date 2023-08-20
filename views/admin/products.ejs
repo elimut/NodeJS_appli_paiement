@@ -32,6 +32,8 @@
                                     <form action="/admin/delete-product" method="POST">
                                         <!-- extract id of product we want delete and store -->
                                         <input type="hidden" value="<%= product.id %>" name="productId">
+                                        <!-- generate csrf token, name to package can find token -->
+                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button class="btn" type="submit">Supprimer</button>
                                     </form>
 

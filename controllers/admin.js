@@ -9,8 +9,6 @@ exports.getAddProduct = (req, res) => {
     path: "/admin/add-product",
     // if editing false get add product form if true we get update product form => views ejs edit-product
     editing: false,
-    // user need to beauth to access
-    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -22,14 +20,15 @@ exports.postAddproduct = (req, res) => {
   const description = req.body.description;
   const price = req.body.price;
   // use object user in req (store in app.js) and method to create an associate product proprosed by sequelize with associations
-  req.user
-    .createProduct({
-      title: title,
-      imageUrl: imageUrl,
-      description: description,
-      price: price,
-      userId: req.user,
-    })
+  const product = new Product({
+    title: title,
+    imageUrl: imageUrl,
+    description: description,
+    price: price,
+    // userId: req.user,
+  });
+  product
+    .save()
     .then((_) => {
       console.log("Created product");
       res.redirect("/admin/products");
@@ -64,8 +63,6 @@ exports.getEditProduct = (req, res) => {
         // edition if req's parameter
         editing: editMode,
         product: product,
-        // user need to beauth to access
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -108,8 +105,6 @@ exports.getProducts = (req, res) => {
         prods: products,
         pageTitle: "Articles",
         path: "/admin/products",
-        // user need to beauth to access
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));

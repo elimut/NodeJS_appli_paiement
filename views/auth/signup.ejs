@@ -7,22 +7,26 @@
    <%- include('../includes/navigation.ejs') %>
 
     <main>
+        <h1>Inscription</h1>
         <% if (errorMessage) { %>
             <div class="user-message"><%= errorMessage %></div>
         <% } %>
-        <form class="login-form" action="/login" method="POST">
+        <form class="login-form" action="/signup" method="POST">
             <div class="form-control">
-                <label for="email">E-mail</label>
-                <!-- value: getProduct in controller can get product information/ if in edit mode => vue value to update product -->
+                <label for="email">E-Mail</label>
                 <input type="email" name="email" id="email">
             </div>
             <div class="form-control">
                 <label for="password">Mot de passe</label>
                 <input type="password" name="password" id="password">
             </div>
+            <div class="form-control">
+                <label for="confirmPassword">Confirmation mot de passe</label>
+                <input type="password" name="confirmPassword" id="confirmPassword">
+            </div>
             <!-- generate csrf token, name to package can find token -->
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button class="btn" type="submit">Connexion</button>
+            <button class="btn" type="submit">S'inscrire</button>
         </form>
     </main>
 <%- include('../includes/end.ejs') %>

@@ -31,6 +31,8 @@
                 <!-- not see by the user, id will be include in the form, and will be extracte with the name productId in the incoming req of controller -->
                 <input type="hidden" value="<%= product.id %>" name="productId">
             <% } %>
+            <!-- generate csrf token, name to package can find token -->
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button class="btn" type="submit"><% if(editing){ %>Modifier<% } else { %>Ajouter<% } %></button>
         </form>
     </main>

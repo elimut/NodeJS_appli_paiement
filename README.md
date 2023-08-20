@@ -2498,3 +2498,72 @@ npm install --save connect-session-sequelize
 
 navigation views
 Le cookie persiste mais aucune session ne correpond car supprimée.
+
+## Ajouter une authentification
+
+### Implémentation
+
+### Cryptage des mots de passe
+
+npm install --save bcrypt
+
+### Ajout de la fonctionnalité de connexion
+
+### Protection des itinéraires
+
+Accès aux URL sans connexion !
+Vérification d'où l'user est connecté avant de renvoyer les pages.
+Exemple: add product => vérification de l'authentification.
+
+### Utilisation du middleware pour protéger les routes
+
+Création d'un middleware qui sera ajouté sur chaque route.
+
+### Attaque CSRF
+
+**Cross-Site Request Forgery**
+
+Il s'agit d'un type d'attaque où les personnes oeuvent abuser des sessions et inciter les user de l'application à exécuter du code malveillant.
+Un user connecté, qui intéragit avec les vues, et l'on a une session et cookie pour cet user.
+Cet user peut envoyer de l'argent par exemple, l'user est trompé de site, cela peut être fait en envoyant un email, qui peut ressembler à notre propre page.
+Sur ce site il peut y avoir un lien menant à notre site, la page réelle, exécutant une demande là-bas, comme un formulaire de paiement.
+L'on a obtenu une session valide pour cet user, si l'on envoie au serveur, notre site, ..., pour cet user.
+Il faut s'assurer que les personnes ne peuvent utiliser la session que s'ils travaillent avec nos vues.
+Ainsi la session ne peut être disponible ailleurs.
+
+### Utilisation d'un jeton CRSF
+
+La protection CRSF est importante, pour l'ajouter à l'application:
+
+npm install --save csurf
+Ce package génère un token CRSF, c'est une valeur de chaîneque l'on peut intégrer dans les formulaires, donc dans les pages pour chaque demandes qui fait quelque chose sur le backend qui change l'état des user.
+Le package vérifiera si la demande entrante à le jeton valide.
+Jeton valeur de hashage aléatoire.
+Le package qui s'exécute sur le serveur détermine si un jeton est valide, et il ne peut être volé car un nouveau jeton est généré pour chaque page rendue.
+
+app.js pour activer ce token.
+
+Recherche du jeton dans req.body
+Il faut vérifier qu'il soit bien disponible dans nos vues, il faut transmettre des données dans nos vues.
+
+### Fournir des messages aux user
+
+Nous ne voulons pas stocker les messages dans la session, on veut juste ajouter un message d'rreur, le flasher, et une fois le messageutilisé, retiré de la session afin qu'il n'en fasse plus parti.
+
+## Envoyer des emails
+
+### Comment?
+
+Du serveur nous envoyons un mail à l'user.
+Avec NodeJs la gestion des mails est différente de la gestion des req, res.
+On utilise des serveurs de messagerie.
+
+### Utiliser sendGrid
+
+npm install --save nodemailer
+
+Pour intéragir avec senGrid:
+npm install --save nodemailer-sendgrid-transport
+### Utiliser nodeMailer
+
+

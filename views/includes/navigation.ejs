@@ -29,10 +29,15 @@
                 <li class="main-header__item">
                     <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Connexion</a>
                 </li>
+                <li class="main-header__item">
+                    <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">S'inscrire</a>
+                </li>
             <% } %>
             <% if (isAuthenticated) { %>
                 <li class="main-header__item <%= path === '/logout' ? 'active' : '' %>">
                     <form action="/logout" method="POST">
+                        <!-- generate csrf token, name to package can find token -->
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit">Déconnexion</button>
                     </form>
                 </li>
@@ -69,10 +74,15 @@
             <li class="mobile-nav__item">
                 <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Connexion</a>
             </li>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">S'inscrire</a>
+            </li>
         <% } %>
         <% if (isAuthenticated) { %>
             <li class="mobile-nav__item <%= path === '/logout' ? 'active' : '' %>">
                 <form action="/logout" method="POST">
+                    <!-- generate csrf token, name to package can find token -->
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit">Déconnexion</button>
                 </form>
             </li>

@@ -1,4 +1,6 @@
 <form action="/cart" method="POST">
+    <!-- generate csrf token, name to package can find token -->
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <button class="btn" type="submit">Ajouter au panier</button>
     <input type="hidden" name="productId" value="<%= product.id %>">
     <!-- encodée dans la dmd qui lui est envoyée. Entrée cachée qui garde les données -->

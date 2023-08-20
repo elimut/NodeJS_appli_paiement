@@ -14,6 +14,8 @@
                             <h2>Quantity: <%= p.cartItem.quantity %></h2>
                             <form action="/cart-delete-item" method="POST">
                                 <input type="hidden" value="<%= p.id %>" name="productId">
+                                <!-- generate csrf token, name to package can find token -->
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                 <button class="btn danger" type="submit">Supprimer</button>
                             </form>
                         </li>
@@ -23,6 +25,8 @@
                 <hr>
                 <div class="centered">
                     <form action="/create-order" method="POST">
+                        <!-- generate csrf token, name to package can find token -->
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit" class="btn">Commander</button>
                     </form>
                 </div>

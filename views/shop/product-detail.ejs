@@ -13,7 +13,9 @@
         </div>
         <h2><%= product.price %>€</h2>
         <p><%= product.description %></p>
-        <%- include('../includes/add-to-cart.ejs') %>
+        <% if (isAuthenticated) { %>
+            <%- include('../includes/add-to-cart.ejs') %>
+        <% } %>
         <form action="/products" method="GET">
             <button class="btn" type="submit">Retour</button>
         </form>
