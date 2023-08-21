@@ -1,24 +1,12 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
-// const sendgridTransport = require("nodemailer-sendgrid-transport");
 
-//  Initialize way to send email. Send a configuration will be use by nodemailer
-// const transporter = nodemailer.createTransport(
-//   sendgridTransport({
-//     auth: {
-//       api_key:
-//         "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",
-//     },
-//   })
-// );
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  // host: "sandbox.smtp.mailtrap.io",
-  // port: 2525,
   auth: {
     user: "vandingenenannesophie@gmail.com",
-    pass: "",
+    pass: "vxmdixwmudsdaijn",
   },
 });
 
@@ -80,7 +68,7 @@ exports.postSignup = (req, res, next) => {
             to: email,
             from: "shop@node.fr",
             subject: "Bienvenue!",
-            html: "<h1>Bienvenue</h1>",
+            html: "<h1>Bienvenue :)</h1>",
           });
         })
         .catch((err) => console.log(err));

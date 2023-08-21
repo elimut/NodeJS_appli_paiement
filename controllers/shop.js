@@ -1,4 +1,4 @@
-// import models to use
+// Import models to use
 const Product = require("../models/product");
 const User = require("../models/user");
 const Cart = require("../models/cart");
@@ -11,7 +11,6 @@ exports.getProducts = (req, res) => {
         prods: products,
         pageTitle: "Articles",
         path: "/products",
-        // user need to beauth to access
       });
     })
     .catch((err) => console.log(err));
@@ -21,23 +20,12 @@ exports.getProducts = (req, res) => {
 exports.getProduct = (req, res) => {
   // productId extract from hidden input in view product ejs
   const prodId = req.params.productId;
-  // Product.findByPk({ where: { id: prodId } })
-  //   // return an array with a lot of element. Interesting by first element
-  //   .then((product) => {
-  //     console.log(product);
-  //     res.render("shop/product-detail", {
-  //       product: products[0],
-  //       pageTitle: `Détails de l'article ${product[0].title}`,
-  //       path: "/products",
-  //     });
-  //   });
   Product.findByPk(prodId)
     .then((product) =>
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product.title,
         path: "/products",
-        // user need to beauth to access
       })
     )
     .catch((err) => console.log(err));
@@ -60,10 +48,9 @@ exports.getIndex = (req, res) => {
 // Get page panier /cart
 // use cart associate at connected user to get & render cart
 exports.getCart = (req, res) => {
-  req.sessionUser.id
+  req.sessionUser
     .getCart()
     .then((cart) => {
-      console.log(cart);
       return cart
         .getProducts()
         .then((products) => {
@@ -85,39 +72,39 @@ exports.postCart = (req, res) => {
   let fetchedCart;
   let newQuantity = 1;
   const user = req.sessionUser.id;
-  // console.log(user);
   // get cart of user
   User.findByPk(user)
     .then((userId) => {
-      console.log(userId);
       return userId.getCart();
-      // return user;
     })
-    // .getCart()
     .then((cart) => {
       fetchedCart = cart;
-      console.log(cart);
       // is the product already exist in cart to increase quantity or add product if not
       // fetch product to add
-      return cart.getProducts({ where: { id: prodId } });
+      return cart.getProducts();
     })
     .then((products) => {
       // verify if product exist and store in var (array need just first element of array )
       let product;
+      let productId;
       if (products.length > 0) {
-        product = products[0];
+        productId = products.map((product) => product.id);
+        product = productId.find((p) => p == prodId);
+        console.log(product);
+        // return product;
       }
       // if have product increase quantity
       if (product) {
-        // fetch old quantity with accessing to between table
+        //   // fetch old quantity with accessing to between table
         const oldQuantity = product.cartItem.quantity;
+        // console.log(oldQuantity);
         newQuantity = oldQuantity + 1;
-        return product;
+        // if product doesn't exist in cart, search data product to add
       }
-      // if product doesn't exist in cart, search data product to add
       return Product.findByPk(prodId);
     })
     .then((product) => {
+      // console.log(product);
       // through to tell sequelize we need key to between table cartItem
       return fetchedCart.addProduct(product, {
         through: { quantity: newQuantity },
@@ -128,19 +115,6 @@ exports.postCart = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
-
-// exports.postCart = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   const user = req.user;
-//   Product.findByPk(prodId)
-//     .then((product) => {
-//       user.addToCart(product);
-//     })
-//     .then((result) => {
-//       console.log(result);
-//       res.redirect("/cart");
-//     });
-// };
 
 // Delete product from cart /cart btn supprimer
 exports.postCartDeleteProduct = (req, res) => {
