@@ -2575,3 +2575,9 @@ npm install --save nodemailer-sendgrid-transport
 
 Il faut créer un jeton unique qui a une date d'expiration que nous allons stocker dans la bdd afin que le lien sur lequel nous n'avons pas cliqué contient le jeton, et nous pouvons vérifier que l'user l'a bien obtenu.
 Le token est nécessaire pour être mis dans le mail que nous allons lui envoyer.
+
+
+## Images 
+
+npm install cloudinary
+
