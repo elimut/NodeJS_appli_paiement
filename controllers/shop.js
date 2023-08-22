@@ -1,7 +1,6 @@
 // Import models to use
 const Product = require("../models/product");
 const User = require("../models/user");
-const Cart = require("../models/cart");
 
 // Get all products  /products page article
 exports.getProducts = (req, res) => {
@@ -52,8 +51,8 @@ exports.getCart = (req, res) => {
     .getCart()
     .then((cart) => {
       let user = req.sessionUser;
-      if(!cart) {
-        return user.createCart()
+      if (!cart) {
+        return user.createCart();
       }
       return cart
         .getProducts()
@@ -85,15 +84,13 @@ exports.postCart = (req, res) => {
       fetchedCart = cart;
       // is the product already exist in cart to increase quantity or add product if not
       // fetch product to add
-      return cart.getProducts({where:{ id: prodId } });
+      return cart.getProducts({ where: { id: prodId } });
     })
     .then((products) => {
       // verify if product exist and store in var (array need just first element of array )
       let product;
-      let productId;
       if (products.length > 0) {
-        console.log(products)
-        product = products[0]
+        product = products[0];
         // productId = products.map((product) => product.id);
         // product = productId.find((p) => p == prodId);
         // console.log(product);
@@ -101,8 +98,7 @@ exports.postCart = (req, res) => {
       }
       // if have product increase quantity
       if (product) {
-        //   // fetch old quantity with accessing to between table
-        console.log(product.cartitem.quantity)
+        // fetch old quantity with accessing to between table
         const oldQuantity = product.cartitem.quantity;
         // console.log(oldQuantity);
         newQuantity = oldQuantity + 1;

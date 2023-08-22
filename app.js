@@ -5,7 +5,7 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const csrf = require("csurf");
 const flash = require("connect-flash");
-const cloudinary = require('cloudinary').v2;
+// const cloudinary = require("cloudinary").v2;
 
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -20,10 +20,10 @@ const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
-// cloudinary.config({ 
-//   cloud_name: 'donbyzgfs', 
-//   api_key: '948936438899285', 
-//   api_secret: '***************************' 
+// cloudinary.config({
+//   cloud_name: 'donbyzgfs',
+//   api_key: '948936438899285',
+//   api_secret: '***************************'
 // });
 
 // To use EJS with Express:

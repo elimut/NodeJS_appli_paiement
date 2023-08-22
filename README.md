@@ -2548,7 +2548,7 @@ Il faut vérifier qu'il soit bien disponible dans nos vues, il faut transmettre 
 
 ### Fournir des messages aux user
 
-Nous ne voulons pas stocker les messages dans la session, on veut juste ajouter un message d'rreur, le flasher, et une fois le messageutilisé, retiré de la session afin qu'il n'en fasse plus parti.
+Nous ne voulons pas stocker les messages dans la session, on veut juste ajouter un message d'erreur, le flasher, et une fois le message utilisé, retiré de la session afin qu'il n'en fasse plus parti.
 
 ## Envoyer des emails
 
@@ -2576,8 +2576,16 @@ npm install --save nodemailer-sendgrid-transport
 Il faut créer un jeton unique qui a une date d'expiration que nous allons stocker dans la bdd afin que le lien sur lequel nous n'avons pas cliqué contient le jeton, et nous pouvons vérifier que l'user l'a bien obtenu.
 Le token est nécessaire pour être mis dans le mail que nous allons lui envoyer.
 
+const crypto = require("crypto");
+Librairies qui aide à créer des valeurs aléatoires, uniques et sécurisées.
+
+### Création d'un formulaire de réinitialisation de mot de passe
+
+### Autorisation spéciale
+
+Tous les utilisateurs ne sont pas autorisés à faire ce qu'ils souhaitent.
+Offrir une session signifie que l'on restreint les autorisations d'un user.
 
 ## Images 
 
 npm install cloudinary
-

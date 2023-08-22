@@ -78,28 +78,29 @@ exports.postEditProduct = (req, res) => {
   const updatedPrice = req.body.price;
   Product.findByPk(prodId)
     .then((product) => {
+      if (product.userId.toString() !== req.user.id.toString()) {
+        return res.redirect("/");
+      }
       product.title = updatedTitle;
       product.imageUrl = updatedImageUrl;
       product.description = updatedDesc;
       product.price = updatedPrice;
       // sequelize method to save in bdd. Return to return promise of save()
-      return product.save();
-    })
-    // promise for save
-    .then((result) => {
-      console.log("Produit mis à jour");
-      // to redirect when promise is finished, async
-      res.redirect("/admin/products");
+      return product
+        .save() // promise for save
+        .then((result) => {
+          console.log("Produit mis à jour");
+          // to redirect when promise is finished, async
+          res.redirect("/admin/products");
+        });
     })
     // catch for all code
     .catch((err) => console.log(err));
 };
 
-// Get all products page gestion admin produit /admin/products
 exports.getProducts = (req, res) => {
-  // find products for the user connected
-  req.user
-    .getProducts()
+  // access only create user for products
+  Product.findAll({ where: { userId: req.user.id } })
     .then((products) => {
       res.render("admin/products", {
         prods: products,

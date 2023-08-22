@@ -21,6 +21,13 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  // Only if user sent a req to reset password
+  resetToken: {
+    type: Sequelize.STRING,
+  },
+  resetTokenExpiration: {
+    type: Sequelize.DATE,
+  },
 });
 
 module.exports = User;
