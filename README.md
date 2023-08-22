@@ -2586,6 +2586,15 @@ Librairies qui aide à créer des valeurs aléatoires, uniques et sécurisées.
 Tous les utilisateurs ne sont pas autorisés à faire ce qu'ils souhaitent.
 Offrir une session signifie que l'on restreint les autorisations d'un user.
 
+## Comprendre la validation
+
+Gestion des entrées user et sa validation.
+
+### Pourquoi?
+
+Nous avons beaucoup de formulaires.
+ 
+
 ## Images 
 
 npm install cloudinary
