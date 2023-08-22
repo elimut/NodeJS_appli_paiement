@@ -51,6 +51,10 @@ exports.getCart = (req, res) => {
   req.sessionUser
     .getCart()
     .then((cart) => {
+      let user = req.sessionUser;
+      if(!cart) {
+        return user.createCart()
+      }
       return cart
         .getProducts()
         .then((products) => {
@@ -81,22 +85,25 @@ exports.postCart = (req, res) => {
       fetchedCart = cart;
       // is the product already exist in cart to increase quantity or add product if not
       // fetch product to add
-      return cart.getProducts();
+      return cart.getProducts({where:{ id: prodId } });
     })
     .then((products) => {
       // verify if product exist and store in var (array need just first element of array )
       let product;
       let productId;
       if (products.length > 0) {
-        productId = products.map((product) => product.id);
-        product = productId.find((p) => p == prodId);
-        console.log(product);
+        console.log(products)
+        product = products[0]
+        // productId = products.map((product) => product.id);
+        // product = productId.find((p) => p == prodId);
+        // console.log(product);
         // return product;
       }
       // if have product increase quantity
       if (product) {
         //   // fetch old quantity with accessing to between table
-        const oldQuantity = product.cartItem.quantity;
+        console.log(product.cartitem.quantity)
+        const oldQuantity = product.cartitem.quantity;
         // console.log(oldQuantity);
         newQuantity = oldQuantity + 1;
         // if product doesn't exist in cart, search data product to add
@@ -129,7 +136,7 @@ exports.postCartDeleteProduct = (req, res) => {
     .then((products) => {
       const product = products[0];
       // only destroy in table cartItem
-      return product.cartItem.destroy();
+      return product.cartitem.destroy();
     })
     .then((result) => {
       res.redirect("/cart");
@@ -157,7 +164,7 @@ exports.postOrder = (req, res) => {
           return order.addProducts(
             products.map((product) => {
               // transformation arry product fetch with map, to get product in order in between table to get attribute of product
-              product.orderItem = { quantity: product.cartItem.quantity };
+              product.orderitem = { quantity: product.cartitem.quantity };
               return product;
             })
           );

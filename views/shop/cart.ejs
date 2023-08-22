@@ -11,7 +11,7 @@
                     <% products.forEach(p => { %>
                         <li class="cart__item">
                             <h2><%= p.title %></h2>
-                            <h2>Quantity: <%= p.cartItem.quantity %></h2>
+                            <h2>Quantity: <%= p.cartitem.quantity %></h2>
                             <form action="/cart-delete-item" method="POST">
                                 <input type="hidden" value="<%= p.id %>" name="productId">
                                 <!-- generate csrf token, name to package can find token -->
