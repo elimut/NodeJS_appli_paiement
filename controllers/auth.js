@@ -3,6 +3,8 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+// To fetch error validation on routes
+const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
 const transporter = nodemailer.createTransport({
@@ -28,6 +30,7 @@ exports.getLogin = (req, res) => {
     isAuthenticated: false,
     // fetch message of flash in req
     errorMessage: message,
+    oldInput: { email: "" },
   });
 };
 
@@ -43,41 +46,43 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Signup",
     isAuthenticated: false,
     errorMessage: message,
+    oldInput: { email: "" },
   });
 };
 
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  // const confirmPassword = req.body.confirmPassword;
-  User.findOne({ where: { email: email } })
-    .then((userInfo) => {
-      if (userInfo) {
-        req.flash("error", `L'email est déjà utilisé`);
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          return transporter.sendMail({
-            to: email,
-            from: "shop@node.fr",
-            subject: "Bienvenue!",
-            html: "<h1>Bienvenue :)</h1>",
-          });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // validation fails 422. No redirect to render same page for user's experience
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      isAuthenticated: false,
+      errorMessage: errors.array()[0].msg,
+      oldInput: { email: email },
+    });
+  }
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
+      return transporter
+        .sendMail({
+          to: email,
+          from: "shop@node.fr",
+          subject: "Bienvenue!",
+          html: "<h1>Bienvenue :)</h1>",
         })
         .catch((err) => console.log(err));
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
@@ -85,6 +90,19 @@ exports.postSignup = (req, res, next) => {
 exports.postLogin = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      pageTitle: "Se connecter",
+      path: "/login",
+      // user need to be auth to access
+      isAuthenticated: false,
+      // fetch message of flash in req
+      errorMessage: errors.array()[0].msg,
+      oldInput: { email: email },
+    });
+  }
   User.findOne({ where: { email: email } })
     .then((user) => {
       if (!user) {

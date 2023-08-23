@@ -2593,7 +2593,35 @@ Gestion des entrées user et sa validation.
 ### Pourquoi?
 
 Nous avons beaucoup de formulaires.
- 
+Quand le formulaire est validé on envoie une requête avec les données du formulaire. L'on intéragit avec une BDD où l'ons tocke ces données.
+Cela est une partie dangereuse, nous n'avons actuellement pas de validation des données, par exemple si un user souhaite se connecter avec un email invalide, ... nous n'empêchons pas d'enregistrer des données erronées.
+Nous allons ajouter une validation, une étape supplémentaire au début du code NodeJS, donc dès que nous traitons une demande sur le serveur avant de stocker sur la bdd.
+L'on peut donc rejeter l'entrée en demandant à l'user de mettre des données correctes.
+
+### Comment valider les input?
+
+L'on peut valider du côté client, à l'aide de JS, donc avant que la demande soit envoyée, l'on surveille donc les entrées pour les événements, pour l'user.
+L'on peut utiliser le JS pour modifier le DOM au moment de l'exécution, ainsi on affiche l'erreur dans le navigaeur avant d'envoyer quoi que ce soit au serveur.
+L'user peut voir et modifier ce code, et désactiver js.
+Ca ne protège donc pas contre l'envoi de données incorrectes au serveur, mais rend l'ecpérience user meilleure.
+Côté serveur, plus sécurisé, pas de modification possible du code.
+Renvoyer un message d'erreur, et éviter de recharger la page, pour garder les données de l'user pour l'expérience user.
+
+### Validation basique
+
+Page login mail, correspondance mot de passe.
+
+npm install --save express-validator
+
+Sur les post.
+
+router.post("/signup", check(), authController.postSignup);
+check('name input'). retourne un middleware, appelle méthode sur l'objet qui est retournée par la fonction de vérification.
+
+    router.post("/signup", check('email').isEmail(), authController.postSignup);
+    
+Controller auth
+
 
 ## Images 
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // mini app express liée à express
+
 const adminController = require("../controllers/admin");
 const isAuth = require("../middleware/is-auth");
 
