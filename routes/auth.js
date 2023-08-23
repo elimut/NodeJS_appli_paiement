@@ -13,13 +13,17 @@ router.get("/signup", authController.getSignup);
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage(`L'email saisi n'est pas valide`),
+    body("email")
+      .isEmail()
+      .withMessage(`L'email saisi n'est pas valide`)
+      .normalizeEmail(),
     body(
       "password",
       "Le mot de passe doit contenir au moins 5 caratères, et ne contenir que des chiffres et des lettres."
     )
       .isLength({ min: 4 })
-      .isAlphanumeric(),
+      .isAlphanumeric()
+      .trim(),
   ],
   authController.postLogin
 );
@@ -39,19 +43,23 @@ router.post(
             `);
           }
         });
-      }),
+      })
+      .normalizeEmail(),
     body(
       "password",
       "Le mot de passe doit contenir au moins 5 caratères, et ne contenir que des chiffres et des lettres."
     )
       .isLength({ min: 4 })
-      .isAlphanumeric(),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Les mots de passe ne correspondent pas.");
-      }
-      return true;
-    }),
+      .isAlphanumeric()
+      .trim(),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Les mots de passe ne correspondent pas.");
+        }
+        return true;
+      }),
   ],
   authController.postSignup
 );

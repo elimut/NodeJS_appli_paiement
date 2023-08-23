@@ -1,14 +1,18 @@
 // import product's model
 const Product = require("../models/product");
 
+const { validationResult } = require("express-validator");
+
 //Page admin ajout produit GET /admin/add-product
 exports.getAddProduct = (req, res) => {
-  // reach page
   res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
     path: "/admin/add-product",
     // if editing false get add product form if true we get update product form => views ejs edit-product
     editing: false,
+    hasError: false,
+    errorMessage: null,
+    validationErrors: [],
   });
 };
 
@@ -19,6 +23,26 @@ exports.postAddproduct = (req, res) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Ajout d'articles",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        price: price,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
   // use object user in req (store in app.js) and method to create an associate product proprosed by sequelize with associations
   const product = new Product({
     title: title,
@@ -60,9 +84,11 @@ exports.getEditProduct = (req, res) => {
       res.render("admin/edit-product", {
         pageTitle: "Edition d'articles",
         path: "/admin/edit-product",
-        // edition if req's parameter
         editing: editMode,
         product: product,
+        hasError: false,
+        errorMessage: null,
+        validationErrors: [],
       });
     })
     .catch((err) => console.log(err));
@@ -76,6 +102,27 @@ exports.postEditProduct = (req, res) => {
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
   const updatedPrice = req.body.price;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Modification d'articles",
+      path: "/admin/edit-product",
+      // if editing false get add product form if true we get update product form => views ejs edit-product
+      editing: true,
+      hasError: true,
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        description: updatedDesc,
+        price: updatedPrice,
+        id: prodId,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
   Product.findByPk(prodId)
     .then((product) => {
       if (product.userId.toString() !== req.user.id.toString()) {

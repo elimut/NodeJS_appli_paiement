@@ -2619,10 +2619,70 @@ router.post("/signup", check(), authController.postSignup);
 check('name input'). retourne un middleware, appelle méthode sur l'objet qui est retournée par la fonction de vérification.
 
     router.post("/signup", check('email').isEmail(), authController.postSignup);
-    
+
 Controller auth
 
+Dans routes, l'on collecte les erreurs, le middlexare stockera les éventuelles erreurs dans un objet error, et dans le controller la fonction Result passera par cet objet d'erreurs géré par ce middleware à la demande et sera à son tour collectée dans la const errors qu'on pourra utiliser pour vérifier s'il y a des erreurs.
 
+error.array() renvoie un visuel d'un tableau d'objets => views.
+
+.custom((value, {}) => {}) reçois la valeur du champ email = value et un objet à partir ququel on peut extraire des choses telles que l'emplacement où cela a été envoyé, chemin, ...
+
+Le mot de passe doit contenir 6 caratères.
+
+### Comparer les mots de passe 
+
+### Ajouter une validation asynchrone
+
+La validation d'inscription ets bonne, mais nous validon d'une manière étrange, en efet dans le controller nlous vérifions si l'adresse email existe déjà.
+Cela devrait être vérifié dans la validation.
+
+     User.findOne({ where: { email: value } }).then((userInfo) => {
+          if (userInfo) {
+            return Promise.reject(`L'email est déjà utilisé, 
+            veuillez vous connecter ou en saisir un autre.
+            `);
+          }
+        });
+Une promesse est un objet JS intégré, et avec le rejet l'on jette une erreur dedans et elle sera rejetée avec un message d'erreur.
+
+Actuellement, lors de la génération d'un message d'erreur les entrées sont perdues.
+Il faut que nous gardions les données.
+
+### Nettoyer les données
+
+Dans express validator, il existe également des sanitizer:
+par exemple, retirer les espaces blancs à gauche, à droite, metre en minuscule, ...
+
+Il existe aussi sanitizing xss, attaques inter script.
+
+Dans dossier routes.
+
+### Validation de l'ajout de produit
+
+## Gestion des erreurs
+
+### Types et gestion d'erreurs
+
+On peut récupèrer des erreurs, informer l'user, il faut les gérer correctement.
+
+Types:
+- Techniques ou liées au réseau, sur lesquelles on a peu d'influence: connexion bdd => afficher l'erreur en attendant la résolution.
+- Exepcted errors, erreurs attendues: intéractions avec des fichiers, db qui peuvent échouer, trop demandes, ... => informer l'user et lui demander de réessayer.
+- Erreurs logiques:
+
+Il y a des erreurs lorsqu'une erreur est levée, une erreur est un objet technique de NodeJs => error is throw.
+Nous avons de soutils que l'on peut utiliser pour tester le code et intercepter les erreurs potentielles afin que nous les gérer.
+Pour le code synchrone, ce serait d'essayer de bloquer les blocs **try-catch**, dans le cas du code asynchrone on utilise des **promesses** **then()-catch()**.
+Dans les deux cas, l'on peut soit gérer directement l'erreur sinon l'on peut utiliser un mécanisme d'express, un middleware spécial de gestion d'erreurs (détection d'erreurs et envoie d'un message d'erreur à l'user)
+
+
+Il a un objet d'erreur intégré que l'on peut lancer, c'est une focntionnalité de JS.
+Il peut y avoir des scénarios où l'erreur ne peut être levée, mais nous ne pouvons pas continuer le code.
+Dans ce cas, l'on décide de soit lancer une erreur (throw errror), soit gérer directement l'erreur qui n'est pas une erreur technique.
+
+>
 ## Images 
 
 npm install cloudinary
+.

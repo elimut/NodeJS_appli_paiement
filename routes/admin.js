@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // mini app express liée à express
-
+const { body } = require("express-validator");
 const adminController = require("../controllers/admin");
 const isAuth = require("../middleware/is-auth");
 
@@ -9,16 +9,42 @@ const isAuth = require("../middleware/is-auth");
 router.get("/add-product", isAuth, adminController.getAddProduct);
 // ref à la fonction getAdd pas de parenthèses, express doit prendre cette fonction et la stocker puis dmd de page l'exécuter
 // /admin/add-product ajout produit
-router.post("/add-product", isAuth, adminController.postAddproduct);
+router.post(
+  "/add-product",
+  [
+    body(
+      "title",
+      `Le titre doit contenir au minimum 3 caratères, et ne contenir que des lettres.`
+    )
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("imageUrl", `Veuillez saisir une URL pour l'image`).isURL(),
+    body("description", `La description doit faire entre 6 et 400 caractères.`)
+      .isLength({ min: 6, max: 400 })
+      .trim(),
+    body("price").isFloat(),
+  ],
+  isAuth,
+  adminController.postAddproduct
+);
 // /admin/products accès page produits
 router.get("/products", isAuth, adminController.getProducts);
 // admin edit product
 router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 // admin update product
-router.post("/edit-product/", isAuth, adminController.postEditProduct);
+router.post(
+  "/edit-product/",
+  [
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("imageUrl").isURL(),
+    body("description").isLength({ min: 6, max: 400 }).trim(),
+    body("price").isFloat(),
+  ],
+  isAuth,
+  adminController.postEditProduct
+);
 // admin delete product
 router.post("/delete-product", isAuth, adminController.postDeleteProduct);
 
 module.exports = router;
-// module.exports = products;
-// exports.routes = router;
