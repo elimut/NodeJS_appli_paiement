@@ -12,7 +12,12 @@ exports.getProducts = (req, res) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Get détails product  /products/:productId
@@ -27,7 +32,12 @@ exports.getProduct = (req, res) => {
         path: "/products",
       })
     )
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Get All products page accueil /
@@ -41,7 +51,12 @@ exports.getIndex = (req, res) => {
         path: "/",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Get page panier /cart
@@ -54,18 +69,20 @@ exports.getCart = (req, res) => {
       if (!cart) {
         return user.createCart();
       }
-      return cart
-        .getProducts()
-        .then((products) => {
-          res.render("shop/cart", {
-            pageTitle: "Panier",
-            path: "/cart",
-            products: products,
-          });
-        })
-        .catch((err) => console.log(err));
+      return cart.getProducts().then((products) => {
+        res.render("shop/cart", {
+          pageTitle: "Panier",
+          path: "/cart",
+          products: products,
+        });
+      });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Add a new product in cart / or /products
@@ -91,23 +108,18 @@ exports.postCart = (req, res) => {
       let product;
       if (products.length > 0) {
         product = products[0];
-        // productId = products.map((product) => product.id);
-        // product = productId.find((p) => p == prodId);
-        // console.log(product);
-        // return product;
       }
       // if have product increase quantity
       if (product) {
         // fetch old quantity with accessing to between table
         const oldQuantity = product.cartitem.quantity;
-        // console.log(oldQuantity);
+
         newQuantity = oldQuantity + 1;
         // if product doesn't exist in cart, search data product to add
       }
       return Product.findByPk(prodId);
     })
     .then((product) => {
-      // console.log(product);
       // through to tell sequelize we need key to between table cartItem
       return fetchedCart.addProduct(product, {
         through: { quantity: newQuantity },
@@ -116,7 +128,12 @@ exports.postCart = (req, res) => {
     .then(() => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Delete product from cart /cart btn supprimer
@@ -137,7 +154,12 @@ exports.postCartDeleteProduct = (req, res) => {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Create new command /create-order with btn commander
@@ -153,19 +175,16 @@ exports.postOrder = (req, res) => {
     })
     .then((products) => {
       // create order for user
-      return req.sessionUser
-        .createOrder()
-        .then((order) => {
-          // don't use through beacause different quantity for product. Use map to associate one product with respective field
-          return order.addProducts(
-            products.map((product) => {
-              // transformation arry product fetch with map, to get product in order in between table to get attribute of product
-              product.orderitem = { quantity: product.cartitem.quantity };
-              return product;
-            })
-          );
-        })
-        .catch((err) => console.log(err));
+      return req.sessionUser.createOrder().then((order) => {
+        // don't use through beacause different quantity for product. Use map to associate one product with respective field
+        return order.addProducts(
+          products.map((product) => {
+            // transformation arry product fetch with map, to get product in order in between table to get attribute of product
+            product.orderitem = { quantity: product.cartitem.quantity };
+            return product;
+          })
+        );
+      });
     })
     .then((result) => {
       // erase cart's product with set on null
@@ -174,7 +193,12 @@ exports.postOrder = (req, res) => {
     .then((result) => {
       res.redirect("/orders");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Get page commande /orders with products
@@ -191,5 +215,10 @@ exports.getOrders = (req, res) => {
         // user need to beauth to access
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };

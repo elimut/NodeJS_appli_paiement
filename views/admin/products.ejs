@@ -29,7 +29,7 @@
                                 <div class="card__actions">
                                     <!-- routing from update product form -->
                                     <a href="/admin/edit-product/<%= product.id %>?edit=true" class="btn">Modifier</a>
-                                    <form action="/admin/delete-product" method="POST">
+                                    <form action="/admin/delete-product?_method=DELETE" method="POST">
                                         <!-- extract id of product we want delete and store -->
                                         <input type="hidden" value="<%= product.id %>" name="productId">
                                         <!-- generate csrf token, name to package can find token -->

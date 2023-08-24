@@ -5,11 +5,10 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const csrf = require("csurf");
 const flash = require("connect-flash");
-// const cloudinary = require("cloudinary").v2;
 
 const bodyParser = require("body-parser");
 const path = require("path");
-const pageNotFoundController = require("./controllers/error");
+const errorController = require("./controllers/error");
 // import connection bdd
 const sequelize = require("./util/database");
 // import models module
@@ -20,12 +19,8 @@ const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
-// cloudinary.config({
-//   cloud_name: 'donbyzgfs',
-//   api_key: '948936438899285',
-//   api_secret: '***************************'
-// });
-
+// Initialize csrf protection. value session default. Middleware
+const csrfProtection = csrf();
 // To use EJS with Express:
 app.set("view engine", "ejs");
 // config var globale pour ejs sur notre app express lui dire où trouver le moteur de template
@@ -36,8 +31,8 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
-// Initialize csrf protection. value session default. Middleware
-const csrfProtection = csrf();
+var methodOverride = require("method-override");
+app.use(methodOverride("_method"));
 
 // Analyse body res
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -58,6 +53,11 @@ app.use(
     saveUninitialized: false,
   })
 );
+// Middlewares:
+// middleware protection csrf
+app.use(csrfProtection);
+// middleware to generate error message
+app.use(flash());
 
 app.use((req, res, next) => {
   const sessionUser = User.build({ ...req.session.user });
@@ -68,19 +68,17 @@ app.use((req, res, next) => {
   User.findByPk(sessionUser.id)
     // store user in a request
     .then((user) => {
+      if (!user) {
+        // to don't store undefined object user and continue
+        return next();
+      }
       req.user = user;
-      // console.log(user);
       next();
     })
-    // to continue if had an user
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      next(new Error(err));
+    });
 });
-
-// Middlewares:
-// middleware protection csrf
-app.use(csrfProtection);
-// middleware to generate error message
-app.use(flash());
 
 // Tp past this fields in rendered views
 app.use((req, res, next) => {
@@ -96,8 +94,18 @@ app.use((req, res, next) => {
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.use(pageNotFoundController.get404Page);
 
+app.use("/500", errorController.get404Page);
+app.use(errorController.get500Page);
+// Error handling middleware, when we call retunr next(error) in controllers
+// no 404 because it's an tecniqly error
+app.use((error, req, res, next) => {
+  res.status(500).render("500", {
+    pageTitle: "Error!",
+    path: "/500",
+    isAuthenticated: req.session.isLoggedIn,
+  });
+});
 // Associations tables db:
 // a product is created by user(admin) this add a fk to product
 Product.belongsTo(User, {
@@ -128,20 +136,5 @@ sequelize
   // force true to force sequelize take all new information on table already created (association and create FK after create models user)
   // .sync({ force: true })
   .sync()
-  // .then((_) => {
-  //   // create manually user to test. Return a promise
-  //   return User.findByPk(1);
-  //   // see an object
-  // })
-  // .then((user) => {
-  //   if (!user) {
-  //     return User.create({ username: "aso", email: "aso@gmail.com" });
-  //   }
-  //   return user;
-  // })
-  // .then((user) => {
-  //   return user.createCart({});
-  //   // if sync db ok and user reach, server is open
-  // })
   .then((result) => app.listen(8080))
   .catch((err) => console.log(err));

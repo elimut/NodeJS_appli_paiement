@@ -2681,8 +2681,20 @@ Il a un objet d'erreur intégré que l'on peut lancer, c'est une focntionnalité
 Il peut y avoir des scénarios où l'erreur ne peut être levée, mais nous ne pouvons pas continuer le code.
 Dans ce cas, l'on décide de soit lancer une erreur (throw errror), soit gérer directement l'erreur qui n'est pas une erreur technique.
 
+Avec try catch l'on peut ontinuer le code, info de l'user que quelque chose s'est mal passé (code synchrone)
+Code asynchrone: then catch.
+
+les erreurs hors des promesses, code async, express les détectera et ira directement au middleware de gestion d'erreur.
+Dnas le code async (then catch...) ne fonctionne cependant pas, on doit l'utiliser avec une erreur incluse. Cela sera ensuite détecté par express, il faut utiliser next pour éviter les boucles infinies.
+
+### Codes statuts
+
+Les codes sont des informations supplémentaires transmises au navigateur, qui l'aident à comprenre si une opération s'est bien passée où non.
+
+
+
 >
 ## Images 
 
 npm install cloudinary
-.
+npm install method-override

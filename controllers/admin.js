@@ -23,6 +23,7 @@ exports.postAddproduct = (req, res) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+  const userId = req.sessionUser.id;
 
   const errors = validationResult(req);
 
@@ -30,7 +31,7 @@ exports.postAddproduct = (req, res) => {
     console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Ajout d'articles",
-      path: "/admin/edit-product",
+      path: "/admin/add-product",
       editing: false,
       hasError: true,
       product: {
@@ -38,6 +39,7 @@ exports.postAddproduct = (req, res) => {
         imageUrl: imageUrl,
         description: description,
         price: price,
+        userId: userId,
       },
       errorMessage: errors.array()[0].msg,
       validationErrors: errors.array(),
@@ -49,7 +51,7 @@ exports.postAddproduct = (req, res) => {
     imageUrl: imageUrl,
     description: description,
     price: price,
-    userId: req.sessionUser.id,
+    userId: userId,
   });
   product
     .save()
@@ -57,7 +59,12 @@ exports.postAddproduct = (req, res) => {
       console.log("Created product");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Get product to update with btn modifier page /admin/edit-product
@@ -91,7 +98,12 @@ exports.getEditProduct = (req, res) => {
         validationErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Put product page /admin/edit-product/:id?edit=true
@@ -136,13 +148,17 @@ exports.postEditProduct = (req, res) => {
       return product
         .save() // promise for save
         .then((result) => {
-          console.log("Produit mis à jour");
           // to redirect when promise is finished, async
           res.redirect("/admin/products");
         });
     })
     // catch for all code
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 exports.getProducts = (req, res) => {
@@ -155,7 +171,12 @@ exports.getProducts = (req, res) => {
         path: "/admin/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Delete product /admin/product/:id
@@ -171,5 +192,10 @@ exports.postDeleteProduct = (req, res) => {
       console.log("Produit supprimé!");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };

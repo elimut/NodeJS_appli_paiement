@@ -14,7 +14,11 @@ router.get("/cart", isAuth, shopController.getCart);
 // access cart /cart
 router.post("/cart", isAuth, shopController.postCart);
 // add product on cart /cart
-router.post("/cart-delete-item", isAuth, shopController.postCartDeleteProduct);
+router.delete(
+  "/cart-delete-item",
+  isAuth,
+  shopController.postCartDeleteProduct
+);
 // delete cart's product
 router.post("/create-order", isAuth, shopController.postOrder);
 // btn commander on cart to store cartItems in orderItems /create-order

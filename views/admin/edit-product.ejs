@@ -10,7 +10,7 @@
         <% if (errorMessage) { %>
             <div class="user-message"><%= errorMessage %></div>
         <% } %>
-        <form class="product-form" action="/admin/<% if (editing) { %>edit-product<% } else { %>add-product<% } %>" method="POST">
+        <form class="product-form" action="/admin/<% if (editing) { %>edit-product?_method=PUT<% } else { %>add-product<% } %>" method="POST">
             <div class="form-control">
                 <label for="title">Titre</label>
                 <!-- value: getProduct in controller can get product information/ if in edit mode => vue value to update product -->

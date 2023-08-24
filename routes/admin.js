@@ -33,18 +33,26 @@ router.get("/products", isAuth, adminController.getProducts);
 // admin edit product
 router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 // admin update product
-router.post(
+router.put(
   "/edit-product/",
   [
-    body("title").isString().isLength({ min: 3 }).trim(),
-    body("imageUrl").isURL(),
-    body("description").isLength({ min: 6, max: 400 }).trim(),
+    body(
+      "title",
+      `Le titre doit contenir au minimum 3 caratères, et ne contenir que des lettres.`
+    )
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("imageUrl", `Veuillez saisir une URL pour l'image`).isURL(),
+    body("description", `La description doit faire entre 6 et 400 caractères.`)
+      .isLength({ min: 6, max: 400 })
+      .trim(),
     body("price").isFloat(),
   ],
   isAuth,
   adminController.postEditProduct
 );
 // admin delete product
-router.post("/delete-product", isAuth, adminController.postDeleteProduct);
+router.delete("/delete-product", isAuth, adminController.postDeleteProduct);
 
 module.exports = router;
