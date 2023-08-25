@@ -19,7 +19,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .trim(),
-    body("imageUrl", `Veuillez saisir une URL pour l'image`).isURL(),
     body("description", `La description doit faire entre 6 et 400 caractères.`)
       .isLength({ min: 6, max: 400 })
       .trim(),
@@ -43,7 +42,6 @@ router.put(
       .isString()
       .isLength({ min: 3 })
       .trim(),
-    body("imageUrl", `Veuillez saisir une URL pour l'image`).isURL(),
     body("description", `La description doit faire entre 6 et 400 caractères.`)
       .isLength({ min: 6, max: 400 })
       .trim(),

@@ -3,7 +3,7 @@ const Product = require("../models/product");
 const User = require("../models/user");
 
 // Get all products  /products page article
-exports.getProducts = (req, res) => {
+exports.getProducts = (req, res, next) => {
   Product.findAll()
     .then((products) => {
       res.render("shop/product-list", {
@@ -21,7 +21,7 @@ exports.getProducts = (req, res) => {
 };
 
 // Get détails product  /products/:productId
-exports.getProduct = (req, res) => {
+exports.getProduct = (req, res, next) => {
   // productId extract from hidden input in view product ejs
   const prodId = req.params.productId;
   Product.findByPk(prodId)
@@ -41,7 +41,7 @@ exports.getProduct = (req, res) => {
 };
 
 // Get All products page accueil /
-exports.getIndex = (req, res) => {
+exports.getIndex = (req, res, next) => {
   Product.findAll()
     // reach array of products
     .then((products) => {
@@ -61,7 +61,7 @@ exports.getIndex = (req, res) => {
 
 // Get page panier /cart
 // use cart associate at connected user to get & render cart
-exports.getCart = (req, res) => {
+exports.getCart = (req, res, next) => {
   req.sessionUser
     .getCart()
     .then((cart) => {
@@ -86,7 +86,7 @@ exports.getCart = (req, res) => {
 };
 
 // Add a new product in cart / or /products
-exports.postCart = (req, res) => {
+exports.postCart = (req, res, next) => {
   // fetch id product to add
   const prodId = req.body.productId;
   let fetchedCart;
@@ -137,7 +137,7 @@ exports.postCart = (req, res) => {
 };
 
 // Delete product from cart /cart btn supprimer
-exports.postCartDeleteProduct = (req, res) => {
+exports.postCartDeleteProduct = (req, res, next) => {
   // extract id of product we want to delete in cart
   const prodId = req.body.productId;
   // access connected user's cart
@@ -163,7 +163,7 @@ exports.postCartDeleteProduct = (req, res) => {
 };
 
 // Create new command /create-order with btn commander
-exports.postOrder = (req, res) => {
+exports.postOrder = (req, res, next) => {
   // store cart
   let fetchedCart;
   // take all cart's products to store in order
@@ -181,6 +181,7 @@ exports.postOrder = (req, res) => {
           products.map((product) => {
             // transformation arry product fetch with map, to get product in order in between table to get attribute of product
             product.orderitem = { quantity: product.cartitem.quantity };
+            console.log(product);
             return product;
           })
         );
@@ -202,7 +203,7 @@ exports.postOrder = (req, res) => {
 };
 
 // Get page commande /orders with products
-exports.getOrders = (req, res) => {
+exports.getOrders = (req, res, next) => {
   req.sessionUser
     //  to see products. Indication for sequelize and views. order don't have key orderItem
     .getOrders({ include: ["products"] })

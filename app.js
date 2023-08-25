@@ -7,6 +7,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 
 const bodyParser = require("body-parser");
+const multer = require("multer");
 const path = require("path");
 const errorController = require("./controllers/error");
 // import connection bdd
@@ -21,6 +22,27 @@ const OrderItem = require("./models/order-item");
 
 // Initialize csrf protection. value session default. Middleware
 const csrfProtection = csrf();
+// moteur de stockage
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + " - " + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 // To use EJS with Express:
 app.set("view engine", "ejs");
 // config var globale pour ejs sur notre app express lui dire où trouver le moteur de template
@@ -31,13 +53,18 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
-var methodOverride = require("method-override");
+const methodOverride = require("method-override");
+
 app.use(methodOverride("_method"));
 
 // Analyse body res
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 // To tell express where are static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 // execute session like a fonction, arg config session
 // secret to hash value store in session
 // resave reegister option false to not register session to each req only if somthing change in session
@@ -53,6 +80,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 // Middlewares:
 // middleware protection csrf
 app.use(csrfProtection);
@@ -90,7 +118,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// middleware to fetch routes to express
+// Middlewares to fetch routes to express
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);

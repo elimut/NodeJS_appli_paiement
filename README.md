@@ -2689,12 +2689,96 @@ Dnas le code async (then catch...) ne fonctionne cependant pas, on doit l'utilis
 
 ### Codes statuts
 
-Les codes sont des informations supplémentaires transmises au navigateur, qui l'aident à comprenre si une opération s'est bien passée où non.
+Les codes sont des informations supplémentaires transmises au navigateur, qui l'aident à comprendre si une opération s'est bien passée ou non.
+L'on peut ainsi comprendre quelle erreur s'est produite.
+
+- 2XX: succès surtout 200 et 201, 
+- 3XX: une redirection s'est produite, 
+- 4XX: erreur côté client,
+- 5XX: erreur côté serveur,
+  
+200 opération réussie,
+201 succès d'une ressource créée sur le serveur, donc en db,
+301 redirection, ressource déplacée de manière permanente ou temporaire,
+401 non authentifié
+403 non autorisé
+404 page non trouvée
+422 entrée non valide
+500 erreur côté serveur
+
+## Upload et download des fichiers
+
+**Download** = téléchargement, données reçues par l'ordinateur d'un serveur distant.
+**Upload** = données envoyées de l'ordinateur vers un serveur distant.
+
+### Ajout d'un sélecteur de fichier au frontend
+
+Uploading:
+dans le cas de l'ajout de produit nous devons entrer une URL, cette configuration n'est pas réaliste car les photos ne sont pas forcèment stockée sur lme web.
+Dons nous voulons donner aux user la possibilité de télécharger des images.
+
+L'ajout de upload file signifie que nous devons faire deux choses:
+- ajuster le form pour montrer un sélecteur de fichiers aux user,
+- accepeter le fichier à l'endroit où nous gérons les demandes entrantes.
+
+### Gestion des données formulaire en plusieurs parties
+
+Avec body parser tout est codé en texte.
+L'extraction ne se fait pas.
+ 
+npm install --save multer
+Analyse les données entrantes, mais également celles des fichiers, données mictes, ...
+
+        <form class="product-form" action="/admin/<% if (editing) { %>edit-product?_method=PUT<% } else { %>add-product<% } %>" method="POST" enctype="multipart/form-data">
+
+Passer aux données de formulaire en plusieurs parties, qui sont simplement le type de contenu indiquant au serveur, que cette demande ne contiendra pas de texte en clair mais des données mixtes, du texte et des données binaires.
+Le package installé recherchera les requêtes entrantes avec ce type de données et pourra ensuite analyser à la fois le texte et notre fichier.
+
+### Gestion de l'upload avec multer
+
+Nous utilisons multer pour extraire des fichiers entrants.
+Multer n'est en fait pas un paquet que nous utiliserons dans le controller admin, mais dans app.js.
+Comment multer va stocker le fichier entrant?
+admin controller.
+Il a stocké dans file sur notre objet de demande, il a stocké le om du champ, le nom de fichier, le type de mime de sorte que le type de fichier qui est le buffer est essentiellement la façon dont Node gère les données binaires, cc'est le résultat des données diffusées, le fichier a été envoyé à notre serveur en tant que flux ou a été traité comme un flux, pour le gérer effcicacement s'il était plus grand.
+Puis cela est les données collectées dans un tampon, l'on peut travailler avec ce tampon pour le mettre dans un fichier.
+
+L'on peut passer un objet à la fonction multer. L'on peut y définir des options.
+Au lieu de tout mettre en mémoire,  il peut ensuite comvertir le tampon en données binaires que l'on peut stocker dans le chemin dest (créa d'un dossier image), ajout .png.
+Nous pouvons définir la clé de stockage.
+
+originalname contient le nom de fichier aléatoire.
+
+### Filtrer les fichiers par types mimes
+
+On peut le configurer également pour autoriser que certains types de fichiers.
+fileFilter
+
+### Enregistrer les données de fichier en db
+
+Les fichiers ne doivent pas être stockés dans une bdd, ils sont trop gros.
+Cela n'est pas efficace.
+Il faut les stocker sur un système de fichiers, comme nous le faisons ici.
+Dans la bdd, l'on va stocker le chemin de l'image via le fichier.
+Le chemin de l'image est stocké en db mais elle ne s'affiche pas, le navigateur indique 404.
+Comment se servir des données?
+
+### Servir des images statiques
+
+Comment les télécharger pour le client?
+Il existe plusieurs façon de servir les images.
+Avec des images accessibles au public, nous servirons notre dossier d'images de manière statique => app.js servir le dossier de manière statique (lesdemandes de fichiers dans le dossier statique seront traités automatiquement et que les fichiers seront retournés)  comme public.
+
+Dans la vue des produits ajout de / dans l'img car le path du middleware static indique /admin/images ...
+Dans ce middleware nous indiquons à express de servir le dossier comme public, et de servir les images comme s'ils étaient dans le dossier racine:
+cela n'affiche pas car express suppose que les fichiers du dossier images sont servis comme s'ils se trouvaient dans le dossier racine. L'on va donc adapter le middleware en lui disant  que si nous avons une demande qui va à /images de servir les fichiers statiquement.
+
+### Télécharger des fichiers avec authentification
+
 
 
 
 >
 ## Images 
 
-npm install cloudinary
 npm install method-override

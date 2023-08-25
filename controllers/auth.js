@@ -82,12 +82,17 @@ exports.postSignup = (req, res, next) => {
           subject: "Bienvenue!",
           html: "<h1>Bienvenue :)</h1>",
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          // express'll go in error handling middleware
+          return next(error);
+        });
     });
 };
 
 // Post page login /login authentification
-exports.postLogin = (req, res) => {
+exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
@@ -118,7 +123,6 @@ exports.postLogin = (req, res) => {
             req.session.isLoggedIn = true;
             // if redirect to fast and sure to save session in db
             return req.session.save((err) => {
-              console.log(err);
               res.redirect("/");
             });
           }
@@ -126,23 +130,23 @@ exports.postLogin = (req, res) => {
           res.redirect("login");
         })
         .catch((err) => {
-          console.log(err);
           res.redirect("login");
         });
     })
     // to continue if had an user
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 // Post page logout /logout deconnection
 exports.postLogout = (req, res) => {
   // method of session's package on session object
   req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect("/");
-    }
+    res.redirect("/");
   });
 };
 
@@ -168,7 +172,6 @@ exports.postReset = (req, res, next) => {
   // nbr octets // buffer= tampon des octets
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
-      console.log(err);
       res.redirect("/reset");
     }
     // store hexadecimal values toString => ASCII normal
@@ -197,7 +200,12 @@ exports.postReset = (req, res, next) => {
           `,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        // express'll go in error handling middleware
+        return next(error);
+      });
   });
 };
 
@@ -221,7 +229,12 @@ exports.getNewPassword = (req, res, next) => {
         passwordToken: token,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -245,11 +258,15 @@ exports.postNewPassword = (req, res, next) => {
       resetUser.password = hashedPassword;
       resetUser.resetToken = null;
       resetUser.resetTokenExpiration = null;
-      console.log(resetUser.resetToken, resetUser.resetTokenExpiration);
       return resetUser.save();
     })
     .then((result) => {
       res.redirect("/login");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
 };

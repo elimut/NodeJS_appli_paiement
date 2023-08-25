@@ -4,7 +4,7 @@ const Product = require("../models/product");
 const { validationResult } = require("express-validator");
 
 //Page admin ajout produit GET /admin/add-product
-exports.getAddProduct = (req, res) => {
+exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Ajout d'articles",
     path: "/admin/add-product",
@@ -17,18 +17,35 @@ exports.getAddProduct = (req, res) => {
 };
 
 // Page admin ajout de produit POST new product /admin/add-product
-exports.postAddproduct = (req, res) => {
+exports.postAddproduct = (req, res, next) => {
   // store attriubte of table in body req
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const description = req.body.description;
   const price = req.body.price;
   const userId = req.sessionUser.id;
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Ajout d'articles",
+      path: "/admin/add-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        description: description,
+        price: price,
+        userId: userId,
+      },
+      errorMessage: `Le fichier n'est pas au format souhaité (.png, .jpg, .jpeg)`,
+      validationErrors: [],
+    });
+  }
+  // to store path of image in file store before
+  const imageUrl = image.path;
 
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Ajout d'articles",
       path: "/admin/add-product",
@@ -68,7 +85,7 @@ exports.postAddproduct = (req, res) => {
 };
 
 // Get product to update with btn modifier page /admin/edit-product
-exports.getEditProduct = (req, res) => {
+exports.getEditProduct = (req, res, next) => {
   // Verify if req have an object (edit:key):
   const editMode = req.query.edit;
   if (!editMode) {
@@ -107,11 +124,11 @@ exports.getEditProduct = (req, res) => {
 };
 
 // Put product page /admin/edit-product/:id?edit=true
-exports.postEditProduct = (req, res) => {
+exports.postEditProduct = (req, res, next) => {
   // Fetch informations to the product we want to updated. (need an input in view edit-product to store existing product's id )
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedDesc = req.body.description;
   const updatedPrice = req.body.price;
 
@@ -126,7 +143,6 @@ exports.postEditProduct = (req, res) => {
       hasError: true,
       product: {
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         description: updatedDesc,
         price: updatedPrice,
         id: prodId,
@@ -141,7 +157,10 @@ exports.postEditProduct = (req, res) => {
         return res.redirect("/");
       }
       product.title = updatedTitle;
-      product.imageUrl = updatedImageUrl;
+      // if image updated, else not changed image in db
+      if (image) {
+        product.imageUrl = image.path;
+      }
       product.description = updatedDesc;
       product.price = updatedPrice;
       // sequelize method to save in bdd. Return to return promise of save()
@@ -161,7 +180,7 @@ exports.postEditProduct = (req, res) => {
     });
 };
 
-exports.getProducts = (req, res) => {
+exports.getProducts = (req, res, next) => {
   // access only create user for products
   Product.findAll({ where: { userId: req.user.id } })
     .then((products) => {
@@ -180,7 +199,7 @@ exports.getProducts = (req, res) => {
 };
 
 // Delete product /admin/product/:id
-exports.postDeleteProduct = (req, res) => {
+exports.postDeleteProduct = (req, res, next) => {
   // extract prod id to delete from the request body
   const prodId = req.body.productId;
   Product.findByPk(prodId)
