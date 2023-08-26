@@ -1,6 +1,9 @@
+const fs = require("fs");
+const path = require("path");
 // Import models to use
 const Product = require("../models/product");
 const User = require("../models/user");
+const Order = require("../models/order");
 
 // Get all products  /products page article
 exports.getProducts = (req, res, next) => {
@@ -181,6 +184,7 @@ exports.postOrder = (req, res, next) => {
           products.map((product) => {
             // transformation arry product fetch with map, to get product in order in between table to get attribute of product
             product.orderitem = { quantity: product.cartitem.quantity };
+            console.log(product.orderitem.quantity);
             console.log(product);
             return product;
           })
@@ -222,4 +226,36 @@ exports.getOrders = (req, res, next) => {
       // express'll go in error handling middleware
       return next(error);
     });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findByPk(orderId)
+    .then((order) => {
+      console.log(order);
+      if (!order) {
+        return next(new Error("Pas de commande trouvée!"));
+      }
+      if (order.user.userId.toString() !== req.params.userId.toString()) {
+        console.log(order.userId);
+        return next(
+          new Error(`Vous n'êtes pas autorisé à accèder à cette page!`)
+        );
+      }
+      const invoiceName = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("invoices", invoiceName);
+      fs.readFile(invoicePath, (err, data) => {
+        if (err) {
+          return next(err);
+        } else {
+          res.setHeader("Content-Type", "application/pdf");
+          res.setHeader(
+            "Content-disposition",
+            'inline; filename="' + invoiceName + '"'
+          );
+          res.send(data);
+        }
+      });
+    })
+    .catch((err) => next(err));
 };

@@ -24,5 +24,5 @@ router.post("/create-order", isAuth, shopController.postOrder);
 // btn commander on cart to store cartItems in orderItems /create-order
 router.get("/orders", isAuth, shopController.getOrders);
 //  access commands /orders
-
+router.get("/orders/:orderId", isAuth, shopController.getInvoice);
 module.exports = router;

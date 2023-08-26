@@ -6,7 +6,7 @@ const sequelize = require("../util/database");
 
 // Create models orderItem with connection pool of sequelize
 // first arg= name of table, second: structure of models, JS object (attributs of models)
-const OrderItem = sequelize.define("orderItem", {
+const OrderItem = sequelize.define("orderitem", {
   // attributs are define with object too
   //   item is a combinaison of product and id cart => create association in app.js
   id: {
