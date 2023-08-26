@@ -232,30 +232,35 @@ exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
   Order.findByPk(orderId)
     .then((order) => {
-      console.log(order);
       if (!order) {
         return next(new Error("Pas de commande trouvée!"));
       }
-      if (order.user.userId.toString() !== req.params.userId.toString()) {
-        console.log(order.userId);
+      if (order.userId.toString() !== req.sessionUser.id.toString()) {
         return next(
           new Error(`Vous n'êtes pas autorisé à accèder à cette page!`)
         );
       }
       const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("invoices", invoiceName);
-      fs.readFile(invoicePath, (err, data) => {
-        if (err) {
-          return next(err);
-        } else {
-          res.setHeader("Content-Type", "application/pdf");
-          res.setHeader(
-            "Content-disposition",
-            'inline; filename="' + invoiceName + '"'
-          );
-          res.send(data);
-        }
-      });
+      // fs.readFile(invoicePath, (err, data) => {
+      //   if (err) {
+      //     return next(err);
+      //   }
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader(
+      //     "Content-disposition",
+      //     'inline; filename="' + invoiceName + '"'
+      //   );
+      //   res.send(data);
+      // });
+      // create stream to read file. Node read file step by step
+      const file = fs.createReadStream(invoicePath);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
+      file.pipe(res);
     })
     .catch((err) => next(err));
 };

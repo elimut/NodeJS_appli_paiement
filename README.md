@@ -2775,8 +2775,44 @@ cela n'affiche pas car express suppose que les fichiers du dossier images sont s
 
 ### Télécharger des fichiers avec authentification
 
+    exports.getInvoice = (req, res, next) => {
+    const orderId = req.params.orderId;
+    Order.findByPk(orderId)
+        .then((order) => {
+        if (!order) {
+            return next(new Error("Pas de commande trouvée!"));
+        }
+        if (order.userId.toString() !== req.sessionUser.id.toString()) {
+            return next(
+            new Error(`Vous n'êtes pas autorisé à accèder à cette page!`)
+            );
+        }
+        const invoiceName = "invoice-" + orderId + ".pdf";
+        const invoicePath = path.join("invoices", invoiceName);
+        fs.readFile(invoicePath, (err, data) => {
+            if (err) {
+            return next(err);
+            }
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+            "Content-disposition",
+            'inline; filename="' + invoiceName + '"'
+            );
+            res.send(data);
+        });
+        })
+        .catch((err) => next(err));
+    };
 
 
+Dans ce cas, Node va lire le fichier en mémoire et le renverra, mais dans le cas de fichiers plus volumineux, cela prendra du temps avant que la réponse ne soit envoyée, et la mémoire sur le serveur pourrait être débordé par les demandes entrantes car il doit lire toutes les données en mémoire, ce qui est limité.
+Au lieu de cela, il faut diffuser les données de réponse (stream).
+Création d'un flux de lecture.
+Lecture étape par étape avec différents morceaux (chunks).
+pipe() pour transmettre les données lues avec ce flux à la réponse, car l'objet de réponse est un flux inscriptible, et l'on peut utiliser des flux lisibles pour diriger leur sortie dans un flux inscriptible, tous les objets ne sont pas un flux inscriptible mais les réponses oui.
+La réponse sera diffusée dans le navigateur et contiendra les données , et les données seront essentiellement téléchargées étape par étape.
+Node n'a pas à charger toutes les données en mémoire, mais simplement les diffuser, et  le plus qu'il doit stocker est un bloc de données.
+Nous n'attendons pas que tous les morceaux se réunissent, et les concatènent en un seul objet, au lieu de cela on les transmet au navigateur qui peut ensuite concaténer les données entrantes dans le fichier final.
 
 >
 ## Images 
