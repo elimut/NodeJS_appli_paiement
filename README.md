@@ -2880,6 +2880,19 @@ Constructeur pdf
 >
 ### Génèrer des pdf avec les données de commandes
 
+### Suppression de fichier
+
+A chaque changement d'image, ou génération de produit, les fichiers restent dans les dossiers.
+On peut les supprimer avec fs.
+
+Util => file.js, ajout de fonctionnalité d'assistance.
+
+## Ajout d'une pagination
+
+Nous récuperons toujours les produits lorsque nous affichons la page produit.
+Nous allons utiliser la pagination, pour diviser nos données sur plusieurs pages.
+Implémentation de zéro.
+query params ? après URL, données facultatives.
 
 
 ## Images 

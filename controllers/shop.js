@@ -8,6 +8,8 @@ const Product = require("../models/product");
 const User = require("../models/user");
 const Order = require("../models/order");
 
+const ITEMS_PER_PAGE = 2;
+
 // Get all products  /products page article
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -48,10 +50,13 @@ exports.getProduct = (req, res, next) => {
 
 // Get All products page accueil /
 exports.getIndex = (req, res, next) => {
+  // /?page=1 query's name: page
+  const page = req.query.page;
+
   Product.findAll()
     // reach array of products
     .then((products) => {
-      res.render("shop/product-list", {
+      res.render("shop/index", {
         prods: products,
         pageTitle: "Boutique",
         path: "/",
@@ -229,9 +234,10 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
+// To generate invoice to order
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
-  Order.findByPk(orderId)
+  Order.findByPk(orderId, { include: ["products"] })
     .then((order) => {
       if (!order) {
         return next(new Error("Pas de commande trouvée!"));
@@ -244,12 +250,15 @@ exports.getInvoice = (req, res, next) => {
       const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("invoices", invoiceName);
 
+      const { products } = order;
+
+      let totalPrice = 0;
+
       const pdfDoc = new PDFDocument();
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-disposition",
-        'inline; filename="' + invoiceName + '"'
-      );
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-disposition": 'inline; filename="' + invoiceName + '"',
+      });
       // redirect this in a stream of file readable => readable stream, can call package file syst on this fonction
       // & store on folder invoices
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
@@ -258,34 +267,16 @@ exports.getInvoice = (req, res, next) => {
       pdfDoc.fontSize(26).text("Facture", {
         underline: true,
       });
-      pdfDoc.text("--------------------------------------");
-      order.products.forEach((prod) => {
-        pdfDoc.text(` ${prod.title} - ${prod.quantity} * 
-      ${prod.price} € `);
+      products.forEach((prod) => {
+        totalPrice += prod.orderitem.quantity * prod.price;
+        pdfDoc.fontSize(14).text(` ${prod.title} : ${prod.orderitem.quantity} *
+        ${prod.price} € `);
+        console.log(prod.title);
       });
 
+      pdfDoc.text(`Prix total = ${totalPrice}€`);
+
       pdfDoc.end();
-
-      // fs.readFile(invoicePath, (err, data) => {
-      //   if (err) {
-      //     return next(err);
-      //   }
-      //   res.setHeader("Content-Type", "application/pdf");
-      //   res.setHeader(
-      //     "Content-disposition",
-      //     'inline; filename="' + invoiceName + '"'
-      //   );
-      //   res.send(data);
-      // });
-      // create stream to read file. Node read file step by step
-
-      // const file = fs.createReadStream(invoicePath);
-      // res.setHeader("Content-Type", "application/pdf");
-      // res.setHeader(
-      //   "Content-disposition",
-      //   'inline; filename="' + invoiceName + '"'
-      // );
-      // file.pipe(res);
     })
     .catch((err) => next(err));
 };

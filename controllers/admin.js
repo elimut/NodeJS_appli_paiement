@@ -1,5 +1,10 @@
-// import product's model
+// Controllers admin, to manage request
+
+// Import product's model
 const Product = require("../models/product");
+
+// Import file helper to delete files updated or deleted on folder
+const fileHelper = require("../util/file");
 
 const { validationResult } = require("express-validator");
 
@@ -159,6 +164,7 @@ exports.postEditProduct = (req, res, next) => {
       product.title = updatedTitle;
       // if image updated, else not changed image in db
       if (image) {
+        fileHelper.deleteFile(product.imageUrl);
         product.imageUrl = image.path;
       }
       product.description = updatedDesc;
@@ -202,6 +208,11 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   // extract prod id to delete from the request body
   const prodId = req.body.productId;
+  Product.findByPk(prodId)
+    .then((product) => {
+      fileHelper.deleteFile(product.imageUrl);
+    })
+    .catch((err) => next(err));
   Product.findByPk(prodId)
     .then((product) => {
       // return a promise
