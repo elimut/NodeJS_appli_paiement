@@ -2814,7 +2814,74 @@ La réponse sera diffusée dans le navigateur et contiendra les données , et le
 Node n'a pas à charger toutes les données en mémoire, mais simplement les diffuser, et  le plus qu'il doit stocker est un bloc de données.
 Nous n'attendons pas que tous les morceaux se réunissent, et les concatènent en un seul objet, au lieu de cela on les transmet au navigateur qui peut ensuite concaténer les données entrantes dans le fichier final.
 
+### Utiliser PDF KIT pour générer des pdf
+
+Comment créer un pdf sur le serveur.
+Package pdf kit: (pas Node mais js?)
+
+npm install --save pdfkit
+Constructeur pdf 
+
+    exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findByPk(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("Pas de commande trouvée!"));
+      }
+      if (order.userId.toString() !== req.sessionUser.id.toString()) {
+        return next(
+          new Error(`Vous n'êtes pas autorisé à accèder à cette page!`)
+        );
+      }
+      const invoiceName = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("invoices", invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
+      // redirect this in a stream of file readable => readable stream, can call package file syst on this fonction
+      // & store on folder invoices
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+      // add one line of text in the doc
+      pdfDoc.text("Hello");
+
+      pdfDoc.end();
+
+
+      // fs.readFile(invoicePath, (err, data) => {
+      //   if (err) {
+      //     return next(err);
+      //   }
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader(
+      //     "Content-disposition",
+      //     'inline; filename="' + invoiceName + '"'
+      //   );
+      //   res.send(data);
+      // });
+      // create stream to read file. Node read file step by step
+    
+
+      // const file = fs.createReadStream(invoicePath);
+      // res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader(
+      //   "Content-disposition",
+      //   'inline; filename="' + invoiceName + '"'
+      // );
+      // file.pipe(res);
+    })
+    .catch((err) => next(err));
+};
 >
+### Génèrer des pdf avec les données de commandes
+
+
+
 ## Images 
 
 npm install method-override
