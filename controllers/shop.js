@@ -213,7 +213,7 @@ exports.getCheckout = (req, res, next) => {
     .then((cart) => {
       let user = req.sessionUser;
       if (!cart) {
-        return user.createCart();
+        return user.createCheckout();
       }
       return cart.getProducts().then((products) => {
         let total = 0;
