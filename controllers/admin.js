@@ -226,9 +226,10 @@ exports.getProducts = (req, res, next) => {
 };
 
 // Delete product /admin/product/:id
-exports.postDeleteProduct = (req, res, next) => {
+exports.deleteProduct = (req, res, next) => {
   // extract prod id to delete from the request body
-  const prodId = req.body.productId;
+  const prodId = req.params.productId;
+
   Product.findByPk(prodId)
     .then((product) => {
       fileHelper.deleteFile(product.imageUrl);
@@ -240,12 +241,9 @@ exports.postDeleteProduct = (req, res, next) => {
       return product.destroy();
     })
     .then((result) => {
-      res.redirect("/admin/products");
+      res.status(200).json({ message: "Produit supprimé!" });
     })
     .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      // express'll go in error handling middleware
-      return next(error);
+      res.status(500).json({ message: `Le produit n'a pas pu être supprimé` });
     });
 };

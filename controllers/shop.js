@@ -206,6 +206,37 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
+// Access to checkout page /checkout
+exports.getCheckout = (req, res, next) => {
+  req.sessionUser
+    .getCart()
+    .then((cart) => {
+      let user = req.sessionUser;
+      if (!cart) {
+        return user.createCart();
+      }
+      return cart.getProducts().then((products) => {
+        let total = 0;
+        products.forEach((p) => {
+          console.log(p.orderitem.quantity);
+          total += p.orderitem.quantity * p.productId.price;
+        });
+        res.render("shop/checkout", {
+          pageTitle: "Paiement",
+          path: "/checkout",
+          products: products,
+          totalSum: total,
+        });
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // express'll go in error handling middleware
+      return next(error);
+    });
+};
+
 // Create new command /create-order with btn commander
 exports.postOrder = (req, res, next) => {
   // store cart

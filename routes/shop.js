@@ -20,9 +20,11 @@ router.delete(
   shopController.postCartDeleteProduct
 );
 // delete cart's product
+router.get("/checkout", isAuth, shopController.getCheckout);
 router.post("/create-order", isAuth, shopController.postOrder);
 // btn commander on cart to store cartItems in orderItems /create-order
 router.get("/orders", isAuth, shopController.getOrders);
 //  access commands /orders
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);
+
 module.exports = router;

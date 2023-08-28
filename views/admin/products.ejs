@@ -1,6 +1,6 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
-    </head>
+</head>
 
     <body>
         <%- include('../includes/navigation.ejs') %>
@@ -29,34 +29,37 @@
                                 <div class="card__actions">
                                     <!-- routing from update product form -->
                                     <a href="/admin/edit-product/<%= product.id %>?edit=true" class="btn">Modifier</a>
-                                    <form action="/admin/delete-product?_method=DELETE" method="POST">
-                                        <!-- extract id of product we want delete and store -->
-                                        <input type="hidden" value="<%= product.id %>" name="productId">
-                                        <!-- generate csrf token, name to package can find token -->
-                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <button class="btn" type="submit">Supprimer</button>
-                                    </form>
+                                    <!-- <form action="/admin/delete-product?_method=DELETE" method="POST"> -->
+                                    <!-- extract id of product we want delete and store -->
+                                    <input type="hidden" value="<%= product.id %>" name="productId">
+                                    <!-- generate csrf token, name to package can find token -->
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button class="btn" type="button" onclick="deleteProduct(this)">Supprimer</button>
+                                    <!-- </form> -->
                                 </div>
                             </article>
                             <% } %>
                     </div>
                     <section class="pagination">
                         <% if (currentPage != 1 && previousPage !== 1) { %>
-                            <a href="/?page=1">1</a>
+                            <a href="/admin/products/?page=1">1</a>
                         <% } %>
                         <% if (hasPreviousPage) { %>
-                            <a href="/?page=<%= previousPage %>"><%= previousPage %></a>
+                            <a href="/admin/products/?page=<%= previousPage %>"><%= previousPage %></a>
                         <% } %>
-                        <a href="/?page=<%= currentPage %>" class="active"><%= currentPage %></a>
+                        <a href="/admin/products/?page=<%= currentPage %>" class="active"><%= currentPage %></a>
                         <% if (hasNextPage) { %>
-                            <a href="/?page=<%= nextPage %>"><%= nextPage %></a>
+                            <a href="/admin/products/?page=<%= nextPage %>"><%= nextPage %></a>
                         <% } %>
                         <% if (lastPage !== currentPage && nextPage  !== lastPage) { %>
-                            <a href="/?page=<%= lastPage %>"><%= lastPage %></a>
+                            <a href="/admin/products/?page=<%= lastPage %>"><%= lastPage %></a>
                         <% } %>
                     </section>
                     <% } else { %>
                         <h1>Pas de produits trouvés!</h1>
                         <% } %>
             </main>
-            <%- include('../includes/end.ejs') %>
+
+<%- include('../includes/end.ejs') %>
+<!-- Import JS client side to use async request, to not reload ou send back new page -->
+<script src="/js/admin.js"></script>

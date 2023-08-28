@@ -2894,7 +2894,98 @@ Nous allons utiliser la pagination, pour diviser nos données sur plusieurs page
 Implémentation de zéro.
 query params ? après URL, données facultatives.
 
+## Comprendre les requêtes asynchrones
 
-## Images 
+Actuellement, la demande était toujours une demande envoyée par notre navigateur lorsque nous lui soumettions un formulaire ou entrions une URL ou cliquions sur un lien, la réponse était toujours soit une redirection ou une nouvelle page HTML.
+Mais parfois, certaines demandes ne se produiront qu'en arrière plan, cela signifie que l'on ne veut pas récupèrer une nouvelle page HTML, seulement échanger des données avec le serveur par exemple.
+
+### Requpetes asynchrones
+
+L'on a le serveur et notre client, et c'est la configuration actuelle.
+Généralement on envoie une demande, du client au serveur, et l'on obtient une réponse, redirectioon ou page HTML.
+Mais il y a des tâches que l'on ne veut pas recharger la page, comme pour supprimer un élément. Dans le navigateur avec JS où l'on a jamais besoin de récupèrer une nouvelle page HTML, mais où nous changeons constamment la page existante, car c'est plus rapide que d'en charger.
+L'idée derrière les requêtes asynchrones est que l'on envoie la demande, mais cette demande contient généralement des données dans un format spécial = **JSON** et que les données sont envoyées au serveur, à une certaine URL ou à une route acceptée par ce serveur de sorte que la logique ne change pas.
+Le serveur peut faire ce qu'il veut avec cela, puis l'on renvoie une réponse qui est également envoyée en arrière plan, donc pas de nouvelle page HTML qu doit être rendue, c'est à la place à nouveau quelques données dans le format JSON.
+C'est ainsi que le serveur peut communqiuer via JS, donc via JS côté client et la logique côté serveur sans recharger ou reconstruire  la page, sans échanger une nouvelle paage HTMl.
+Ainsi, l'on peut travailler en arrière plan sans interrompre le flux user, sans recharger la page.
+
+### Ajout code JS côté client
+
+Sur la page product admin, où l'on peut supprimer des produits.Actuellement, on envoie la requête au serveur, et l'on récupère une nouvelle page.
+
+Delete product => lorsque l'on clique sur supprimer, l'on envoie les informations que nous voulons supprimer cet élément au serveur en arrière plan, le serveur peut continuer son travail, et une fois que nous avons terminé, le serveur répondra avec des données JSON, donc un message de réussite, et une fois ce message reçu dans le navigateur, nous pouvons supprimer l'élément du DOM.
+Avec JS fonctionnat dans le navigateur.
+Côté serveur demande JS asynchrone où l'on utilisera des demandes JS asynchrones.
+
+public js admin.js => code qui ne s'exécutera pus sur le serveur, mais dans le client.
+import dans products.ejs
+
+        <button class="btn" type="button" onclick="deleteProduct(this)">Supprimer</button>
+This pour accèder au bouton.
+Maintenant il faut une route pour supprimer.
+
+### Format de données JSON
+
+**JavaScript Objetc Notation**
+Format léger d'échanges de données.
+Facile à lire par les humains et machine, ainsi qu' à générer.
+Basé sur un sous ensemble de la norme de langage JS.
+Format de texte totalement indépendant du lanage mais qui utilise des conventions familières aux programmeurs.
+
+Construit sur deux structures:
+- une collection de paires clef/valeur, souvent sous forme d'un objet.
+- une liste ordonnée de valeurs, souvent tableau.
+
+Structure de données universelles, pratiquement tous les langages de programmation les prennent en charge.
+
+Cela ressemble au JS normal, mais la différence est que les clefs sont entourées de "".
+
+    {
+        "name": "name",
+        "age": 29
+        "courses": [
+            "hello",
+            "paul"
+        ]
+    }
+
+
+## Sources
+
+
+## A voir
 
 npm install method-override
+GET et POST pris en charge nativement par le navigateur pour les requêtes envoyées par le navigateur.
+
+
+fecth méthode prise en charge par le navigateur pour envoyer des requêtes http (aussi récupèrer des données).
+L'on peut lui transmettre une URL, où envoyer la requête.
+
+delete pas de corps.
+L'on n'envoie aucune données JSON avec la demande car il s'agit d'une demande de suppression sans corps de message.
+
+La page doit être rechargée pour ne plus voir le produit.
+
+### Manipuler le DOM
+
+## Ajout de paiements
+
+Utilisation de **stripe**, fournisseur pour intégrer le paiement.
+
+### Comment le paiement fonctionne?
+
+Il faut collecter le mode de paiement, vérifier les données de paiement, facturer, gérer les paiements: protection contre la fraude, gestion des litiges, ..., et traiter la commande.
+Toutes ces tâches sont complexes, d'un point de vue juridique et technique, donc elles sont généralement sous traitées.
+Stripe est une entreprise populaire, offrant des services de paiement, et facile d'ajout sur une application.
+
+L'on a notre client, et le serveur, dans le client nous collecterons les données de CB, cela sera fait grâce à Stripe, et nous l'enverrons donc à ses serveurs qui ne nous pour valider les données.
+Une fois validées, Stripe nous renverra un jeton qui encode ou qui comprend les données de la cb, et la confirmation de leurs exactitudes.
+Nous envoyons ce jeton à notre serveur, donc au code, nous créons des frais ou nous facturons ensuite ce mode de paiement à l'aide de stripe à nouveau.
+Donc l'on crée un paiement, un objet de charge, envoyé à Stripe avec le jeton et notre prix inclus et Stripe fera alors la charge réelle, et l'on obtiendra une réponse une fois cela fait et l'on peut continuer avec le code, le modifier ou le stocker dans la BDD, ...
+
+### Ajout de la page de paiement
+
+
+
+
