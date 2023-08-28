@@ -12,12 +12,30 @@ const ITEMS_PER_PAGE = 2;
 
 // Get all products  /products page article
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  // /?page= query's name: page. If not defined => 1
+  const page = +req.query.page || 1;
+  const offset = (page - 1) * ITEMS_PER_PAGE;
+  let totalItems;
+
+  Product.findAndCountAll()
+    .then((numProducts) => {
+      totalItems = numProducts.count;
+      return Product.findAll({
+        offset: offset,
+        limit: ITEMS_PER_PAGE,
+      });
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "Articles",
         path: "/products",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
@@ -50,19 +68,31 @@ exports.getProduct = (req, res, next) => {
 
 // Get All products page accueil /
 exports.getIndex = (req, res, next) => {
-  // /?page=1 query's name: page
-  const page = req.query.page;
+  // /?page= query's name: page. If not defined => 1
+  const page = +req.query.page || 1;
   const offset = (page - 1) * ITEMS_PER_PAGE;
-  Product.findAll({
-    offset: offset,
-    limit: ITEMS_PER_PAGE,
-  })
+  let totalItems;
+
+  Product.findAndCountAll()
+    .then((numProducts) => {
+      totalItems = numProducts.count;
+      return Product.findAll({
+        offset: offset,
+        limit: ITEMS_PER_PAGE,
+      });
+    })
     // reach array of products
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Boutique",
         path: "/",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {

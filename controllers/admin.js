@@ -8,6 +8,8 @@ const fileHelper = require("../util/file");
 
 const { validationResult } = require("express-validator");
 
+const ITEMS_PER_PAGE = 2;
+
 //Page admin ajout produit GET /admin/add-product
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -187,13 +189,32 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  // access only create user for products
-  Product.findAll({ where: { userId: req.user.id } })
+  // /?page= query's name: page. If not defined => 1
+  const page = +req.query.page || 1;
+  const offset = (page - 1) * ITEMS_PER_PAGE;
+  let totalItems;
+
+  Product.findAndCountAll()
+    .then((numProducts) => {
+      totalItems = numProducts.count;
+      return Product.findAll({
+        where: { userId: req.user.id },
+        offset: offset,
+        limit: ITEMS_PER_PAGE,
+      });
+    })
+    // Product.findAll({ where: { userId: req.user.id } })
     .then((products) => {
       res.render("admin/products", {
         prods: products,
         pageTitle: "Articles",
         path: "/admin/products",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
