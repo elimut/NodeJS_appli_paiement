@@ -128,6 +128,7 @@ app.use(errorController.get500Page);
 // Error handling middleware, when we call retunr next(error) in controllers
 // no 404 because it's an tecniqly error
 app.use((error, req, res, next) => {
+  console.log(error);
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",

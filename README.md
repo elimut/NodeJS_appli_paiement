@@ -2536,7 +2536,7 @@ Ainsi la session ne peut être disponible ailleurs.
 La protection CRSF est importante, pour l'ajouter à l'application:
 
 npm install --save csurf
-Ce package génère un token CRSF, c'est une valeur de chaîneque l'on peut intégrer dans les formulaires, donc dans les pages pour chaque demandes qui fait quelque chose sur le backend qui change l'état des user.
+Ce package génère un token CRSF, c'est une valeur de chaîne que l'on peut intégrer dans les formulaires, donc dans les pages pour chaque demandes qui fait quelque chose sur le backend qui change l'état des user.
 Le package vérifiera si la demande entrante à le jeton valide.
 Jeton valeur de hashage aléatoire.
 Le package qui s'exécute sur le serveur détermine si un jeton est valide, et il ne peut être volé car un nouveau jeton est généré pour chaque page rendue.
@@ -2986,6 +2986,14 @@ Donc l'on crée un paiement, un objet de charge, envoyé à Stripe avec le jeton
 
 ### Ajout de la page de paiement
 
+### Utiliser Stripe
 
+    <script src="https://js.stripe.com/v3/" async></script>
+
+[Stripe](https://stripe.com/docs/libraries/stripejs-esmodule)
+
+ npm install --save stripe
+
+req.protocol => 
 
 
