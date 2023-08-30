@@ -1,0 +1,21 @@
+{
+    "name": "nodejs_appli_paiement",
+    "short_name": "Enlivrez vous",
+    "start_url": "/shop/index.ejs",
+    "background_color": "white",
+    "theme_color": "white",
+    "orientation": "portrait-primary",
+    "Scope": "/",
+	"lang": "fr",
+    "display": "standalone",
+    "icons": [
+        {
+          "src": "icons/logo-192.png",
+          "sizes": "192x192"
+        },
+        {
+          "src": "icons/icons.png",
+          "sizes": "512x512"
+        }
+      ]
+}

@@ -2996,4 +2996,48 @@ Donc l'on crée un paiement, un objet de charge, envoyé à Stripe avec le jeton
 
 req.protocol => 
 
+## PWA
 
+Progressive Web App
+
+Google, des robots android qui déterminent si l'application est éligible à être une PWA.
+L'on peut le voir avec le pluggin lighthouse, permet de voir si l'application est compatible PWA.
+On peut ainsi s'intaller sur un téléphone sans coder un langage spécial.
+
+PWA => 
+- responsive, 
+- en https, 
+- **Manifest.json**, document dans lequel on indique les propriétés de l'app (nom, logo, ...), cela créera notre application,
+- il faut pouvoir mettre des données en cache, l'app doit être rapide. Il faut passer par un **service worker**. Même hors ligne l'on peut accèder à l'appli.
+
+Le pluggin va créer des rapports, tester notre page selon différents critères.
+
+>Service worker est une technologie qui permet à votre appli d'exploiter de nombreuses fonctionnalités propres aux progressive web apps, comme le fonctionnement hors connexion, l'ajout à l'écran d'accueil et les notifications push. Lorsqu'un service worker et un fichier manifeste sont correctement implémentés, les utilisateurs peuvent être invités à ajouter votre appli à leur écran d'accueil par le biais de leur navigateur. Cette fonctionnalité peut contribuer à une hausse de l'engagement.
+
+L'on va utiliser l'émulateur Android.
+
+On se connecte au compte Google, on ne peut pas directement taper localhost car simulateur => 10.0.2.2:8080.
+
+Paramètre Add to home screen => bandeau de téléchargement, mais pas de Manifest.
+
+Le manifest.json.
+
+Les programmes JavaScript s'éxécutent habituellement dans un unique processus (mono-thread).
+
+>Un Web Worker permet d'exécuter une partie d'un programme JavaScript dans un nouveau thread séparé du thread principal. Le code du worker réside généralement dans un fichier JavaScript séparé du reste du code de l'application. Une fois le worker créé, il peut interagir avec le thread principal de manière bidirectionnelle à l'aide de la fonction postMessage et de l'évènement message.Étant donné qu'un worker dispose de son propre thread, il peut effectuer des tâches exigeant beaucoup plus de puissance CPU sans que cela impacte la réactivité du thread principal, typiquement une page web.
+
+Pour mobile, HTTPS:
+aller sur chrome://inspect/#devices
+On peut accepter des émulateurs, port et config mettre le bon port.
+Cela nous permet d'être en HTTPS, mettre http://localhost:8080 dans l'émulateur.
+En local, pense que l'on est en HTTPS.
+
+
+Pour l'HTTPS:
+
+
+
+## Sources
+
+![PWA](https://www.youtube.com/watch?v=pbSdAp8EmwI&ab_channel=FromScratch-Led%C3%A9veloppementWebdez%C3%A9ro)
+![Service worker](https://pwa-workshop.js.org/fr/2-service-worker/#introduction-aux-web-workers)
