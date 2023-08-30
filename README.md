@@ -2416,7 +2416,7 @@ Stockage dans le serveur, stockage dans la mémoire qui est assez similaire au s
 Nous avons besoin d'un élément d'information important.
 Un client doit indiquer au serveur à quelle session il appartient car la session sera à la fin juste une entrée stockée en mémoire ou dans une base de données.
 Nous utiliserons un cookie, où nous stockerons l'id de la session.
-La valeur stockée sera un id hashé, avec un algorithmr où seul le serveur peut confirmer qu'il n'a pas été manipulé. Stockage de l'id de manière cryptée.
+La valeur stockée sera un id hashé, avec un algorhitme où seul le serveur peut confirmer qu'il n'a pas été manipulé. Stockage de l'id de manière cryptée.
 Les sessions sont stockées dans le server side et les cookies dans le client side.
 
 ### Implémeter une session avec un middleware
