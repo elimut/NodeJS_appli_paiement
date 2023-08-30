@@ -570,26 +570,25 @@ exports.getCheckout = (req, res, next) => {
       //   return user.createCart();
       // }
       // console.log(cart);
-      products = cart
+      return cart
         .getProducts()
         .then((product) => {
           total = 0;
           product.forEach((p) => {
             total += p.cartitem.quantity * p.price;
           });
+          products = product;
           // creating session key to use stripe in front. Configure session
-          const line_items = product.map((product) => ({
+          const line_items = products.map((p) => ({
             price_data: {
               currency: "eur",
               product_data: {
-                name: product.title,
+                name: p.title,
               },
-              unit_amount: product.price * 100, // Convertir en centimes
+              unit_amount: p.price * 100, // Convertir en centimes
             },
-            quantity: product.cartitem.quantity,
+            quantity: p.cartitem.quantity,
           }));
-          // console.log(line_items);
-          // console.log("test");
           return stripe.checkout.sessions.create({
             line_items,
             payment_method_types: ["card"],

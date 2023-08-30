@@ -23,7 +23,7 @@
                 <script src="https://js.stripe.com/v3/" async></script>
                 <!-- to insert local testing key Stripe -->
                 <script>
-                    var stripe = Stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
+                    var stripe = stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
                     var orderBtn = document.getElementsById('order-btn');
                     orderBtn.addEventListener('click', function() {
                         // after verify by stripe CB's information, user be redirect to checkout
