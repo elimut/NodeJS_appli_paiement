@@ -3049,6 +3049,17 @@ Puis, par la suite lors des requêtes le service worker va interroger le cache, 
     );
 https://stackoverflow.com/questions/35780397/understanding-service-worker-scope
 
+En ligne, le service worker fonctionne, il faut lui donner des directives pour qu'il fonctionne en mode hors ligne: fetcher les différents caches.
+
+kaliop service workers.
+https://www.kaliop.com/fr/les-service-workers-vers-la-pwa/
+Fichiers en cache.
+
+Traitement des requêtes avec service worker:
+
+
+
+
 
 ## Sources
 
