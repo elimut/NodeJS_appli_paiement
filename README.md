@@ -3033,7 +3033,11 @@ Cela nous permet d'être en HTTPS, mettre http://localhost:8080 dans l'émulateu
 En local, pense que l'on est en HTTPS.
 
 
-Pour l'HTTPS:
+Le service worker est comme un tampon entre le réseau, et l'application.
+Quand on fait une requête au network, ça passe par le service worker, et ce service fournit les pages à l'application.
+Le service en fonction de ce qu'on lui a indiqué met envoie en cache.
+Puis, par la suite lors des requêtes le service worker va interroger le cache, pour savoir quoi fournir pour accèlérer le temps de chargement, hors ligne il va aller directement dans le cache récupéré ce qui a été stocké.
+
 
 
 
