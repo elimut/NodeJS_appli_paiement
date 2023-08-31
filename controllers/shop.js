@@ -11,7 +11,6 @@ const PDFDocument = require("pdfkit");
 const Product = require("../models/product");
 const User = require("../models/user");
 const Order = require("../models/order");
-const { log } = require("console");
 
 const ITEMS_PER_PAGE = 2;
 

@@ -3039,6 +3039,15 @@ Le service en fonction de ce qu'on lui a indiqué met envoie en cache.
 Puis, par la suite lors des requêtes le service worker va interroger le cache, pour savoir quoi fournir pour accèlérer le temps de chargement, hors ligne il va aller directement dans le cache récupéré ce qui a été stocké.
 
 
+    Juste au cas où la portée change entre l'environnement de développement et l'environnement de production, comme nous utilisons souvent des sous-répertoires locaux pour les projets, l'utilisation de "./" pour la portée peut sauver la situation (et la rendre dynamique).
+
+    navigator.serviceWorker.register(
+        `./service-worker.js`, 
+        {
+            scope: `./`
+        }
+    );
+https://stackoverflow.com/questions/35780397/understanding-service-worker-scope
 
 
 ## Sources
