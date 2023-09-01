@@ -5,7 +5,7 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const csrf = require("csurf");
 const flash = require("connect-flash");
-
+const port = 8080 || 49160;
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
@@ -127,8 +127,7 @@ app.use("/500", errorController.get404Page);
 app.use(errorController.get500Page);
 // Error handling middleware, when we call retunr next(error) in controllers
 // no 404 because it's an tecniqly error
-app.use((error, req, res, next) => {
-  console.log(error);
+app.use((error, req, res) => {
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",
