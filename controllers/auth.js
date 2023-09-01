@@ -120,6 +120,7 @@ exports.postLogin = (req, res, next) => {
         .then((doMatch) => {
           if (doMatch) {
             req.session.user = user;
+            console.log(user);
             req.session.isLoggedIn = true;
             // if redirect to fast and sure to save session in db
             return req.session.save((err) => {
