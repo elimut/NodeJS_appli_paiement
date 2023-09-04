@@ -1,6 +1,15 @@
 // Mise en cache PWA
 const staticCacheName = "cache-V1";
-const assets = ["./", "./css/main/css"];
+const assets = [
+  "/",
+  "css/auth.css",
+  "css/cart.css",
+  "css/forms.css",
+  "css/main.css",
+  "css/orders.css",
+  "css/product.css",
+  "../images/1693130967361 - OranPamuk.jpg",
+];
 
 // Ajout fichier en cache
 self.addEventListener("install", (e) => {
