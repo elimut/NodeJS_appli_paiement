@@ -5,7 +5,6 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const csrf = require("csurf");
 const flash = require("connect-flash");
-const port = 8080 || 49160;
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
