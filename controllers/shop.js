@@ -252,6 +252,7 @@ exports.getCheckout = (req, res, next) => {
           });
         })
         .then((session) => {
+          console.log(session);
           res.render("shop/checkout", {
             pageTitle: "Paiement",
             path: "/checkout",

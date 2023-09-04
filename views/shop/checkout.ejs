@@ -19,19 +19,28 @@
                 <h2>Total: <%= totalSum %>€</h2>
             </div>
             <div class="centered">
-                <button id="order-btn" class="btn">Commande</button>
                 <script src="https://js.stripe.com/v3/" async></script>
+                <button id="order-btn" class="btn">Commande</button>
                 <!-- to insert local testing key Stripe -->
                 <script>
-                    const Stripe = require('stripe')
+                // <!-- <script type="module">
+                    // import { Stripe } from 'stripe';
+                    // const stripe =  new Stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
+                    // var orderBtn = document.getElementById('order-btn');
+                    // orderBtn.addEventListener('click', function() {
+                    //     // after verify by stripe CB's information, user be redirect to checkout
+                    //     stripe.redirectToCheckout({
+                    //         sessionId: '<%= sessionId %>'
+                    //     })
+                    // }) -->
+                    var orderBtn = document.getElementById('order-btn');
+                orderBtn.addEventListener('click', function () {
+                    // après vérification par les informations de Stripe, l'utilisateur sera redirigé vers la caisse
                     var stripe = Stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
-                    var orderBtn = document.getElementsById('order-btn');
-                    orderBtn.addEventListener('click', function() {
-                        // after verify by stripe CB's information, user be redirect to checkout
-                        stripe.redirectToCheckout({
-                            sessionId: '<%= sessionId %>'
-                        })
-                    })
+                    stripe.redirectToCheckout({
+                        sessionId: '<%= sessionId %>'
+                    });
+                });
                 </script>
             </div>
         </main>

@@ -18,7 +18,6 @@ const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
-
 // Initialize csrf protection. value session default. Middleware
 const csrfProtection = csrf();
 // moteur de stockage

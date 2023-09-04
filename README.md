@@ -789,7 +789,7 @@ erreur usage ailleurs car installé en local sur la machine
 
 npm install package -g
 
-### Comprendre les différnetes erreurs de types
+### Comprendre les différentes erreurs de types
 
 Comment trouver et corriger les errreurs dans le code.
 Il existe différents types d'erreurs:
@@ -997,7 +997,7 @@ image, style, ...
 
 Actuellement on renvoie des pages HTML statiques.
 Il est plutôt courant que certaines données soient gérées par le serveur, également dans la BDD.
-Sortir dinamyqueme,t le code HTML que l'on veut renvoyer aux user.
+Sortir dinamyquement le code HTML que l'on veut renvoyer aux user.
 
 ### Partage de demandes enttre les demandes et les user
 
@@ -1025,7 +1025,7 @@ Exemple: titre devrait être stocké de façon permanente.
 
 ### Templating engines 
 
-Mettre du contenu dynamiquedans les pages HTML.
+Mettre du contenu dynamique dans les pages HTML.
 
 On a un HTMLish Template, contient du code HTML, la structure,... qui contient également des contenus réservés.
 Il y a le contenu de NodeJS/express comme tableau factice, et un moteur de templates qui comprend une certaine syntaxe pour laquelle il analyse le HTMLish template et où il remplace les espaces réservés ou certains extraits de code en fonction du moteur utilisé, avec du vrai code HTML, mais ce contenu est généré par le serveur à la volée.
@@ -1071,7 +1071,7 @@ Toute la logique repose sur les produits.
 Création dossier controllers, products.js
 export fct get dans admin.js pour l'ajouter dans la route
 
-### Ajout d'un mmodel de produit
+### Ajout d'un model de produit
 
 ### Stockage de données dnas des fichiers via models
 
@@ -1264,7 +1264,7 @@ La valeur extraite est un string, donc "true" not true.
 
 ### Pré-remplir la page edit product
 
-Il faut fetch le produit, en mode edit true.
+Il fh fetch le produit, en mode edit true.
 Besoin de l'id product.
 
     exports.getEditProduct = (req, res) => {
@@ -2370,7 +2370,7 @@ Les cooies sont donc stockées dans le client side.
 
 Variable globale stockée dans un fichier supplémentaire, que l'on exporte à partir de ce fichier, et qui sera modifiée.
 La variable survivra aux cycles de demande. Mais elle serait partagée entre toutes les ddemandes, partagée entre tous les user => cookie.
-L'on peut stocker des données dans le navigateur d'un seul user, données personnalisées pour cet user sans affecter les autres user, et qui peut être envoyé avec des demandes pour dire par exemple que l'authentification est bonne.
+L'on peut stocker des données dans le navigateur d'un seul user, données personnalisées pour cet user sans affecter les autres user, et qui peut être envoyé avec des demandes pour dire par exemple que l'eentification est bonne.
 
     // Get page login /login
     exports.getLogin = (req, res) => {
@@ -2431,7 +2431,7 @@ npm install --save express-session
     // saveUnInitialized false none session will be register for a req 
     app.use(session({ secret: "donttouch", resave: false}));
 
-### Utiliser le middleware de sessin
+### Utiliser le middleware de session
 
 auth.js controller
 
@@ -2505,7 +2505,7 @@ Le cookie persiste mais aucune session ne correpond car supprimée.
 
 ### Cryptage des mots de passe
 
-npm install --save bcrypt
+npm install --save crypt
 
 ### Ajout de la fonctionnalité de connexion
 
@@ -2987,6 +2987,9 @@ Donc l'on crée un paiement, un objet de charge, envoyé à Stripe avec le jeton
 ### Ajout de la page de paiement
 
 ### Utiliser Stripe
+
+npm install @stripe/stripe-js
+https://github.com/stripe/stripe-js/blob/master/README.md
 
     <script src="https://js.stripe.com/v3/" async></script>
 
