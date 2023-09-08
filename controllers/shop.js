@@ -161,7 +161,7 @@ exports.postCart = (req, res, next) => {
       if (product) {
         // fetch old quantity with accessing to between table
         const oldQuantity = product.cartitem.quantity;
-
+        console.log(product, product.cartitem, product.cartitem.quantity);
         newQuantity = oldQuantity + 1;
         // if product doesn't exist in cart, search data product to add
       }
@@ -217,11 +217,6 @@ exports.getCheckout = (req, res, next) => {
   req.sessionUser
     .getCart()
     .then((cart) => {
-      // let user = req.sessionUser;
-      // if (!cart) {
-      //   return user.createCart();
-      // }
-      // console.log(cart);
       return cart
         .getProducts()
         .then((product) => {
@@ -252,7 +247,6 @@ exports.getCheckout = (req, res, next) => {
           });
         })
         .then((session) => {
-          console.log(session);
           res.render("shop/checkout", {
             pageTitle: "Paiement",
             path: "/checkout",
@@ -264,7 +258,6 @@ exports.getCheckout = (req, res, next) => {
         .catch((err) => {
           const error = new Error(err);
           error.httpStatusCode = 500;
-          console.error(error);
           // express'll go in error handling middleware
           return next(error);
         });
@@ -272,61 +265,10 @@ exports.getCheckout = (req, res, next) => {
     .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;
-      console.error(error);
       // express'll go in error handling middleware
       return next(error);
     });
 };
-
-// exports.getCheckout = (req, res, next) => {
-//   var total = 0;
-//   var products;
-
-//   req.sessionUser
-//     .getCart()
-//     .then((cart) => {
-//       products = cart;
-//       return cart.getProducts(); // Récupérer les produits du panier
-//     })
-//     .then((products) => {
-//       total = products.reduce((sum, product) => {
-//         return sum + product.cartitem.quantity * product.price;
-//       }, 0);
-
-//       const line_items = products.map((product) => ({
-//         price_data: {
-//           currency: "eur",
-//           product_data: {
-//             name: product.title,
-//           },
-//           unit_amount: product.price * 100, // Convertir en centimes
-//         },
-//         quantity: product.cartitem.quantity,
-//       }));
-
-//       return stripe.checkout.sessions.create({
-//         payment_method_types: ["card"],
-//         line_items,
-//         mode: "payment",
-//         success_url:
-//           req.protocol + "://" + req.get("host") + "/checkout/success",
-//         cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel",
-//       });
-//     })
-//     .then((session) => {
-//       res.render("shop/checkout", {
-//         pageTitle: "Paiement",
-//         path: "/checkout",
-//         products: products,
-//         totalSum: total,
-//         sessionId: session.id,
-//       });
-//     })
-//     .catch((err) => {
-//       console.error("Erreur lors de la création de la session Stripe:", err);
-//       return next(err); // Gérez l'erreur de manière appropriée
-//     });
-// };
 
 // Create new command /create-order with btn commander
 exports.postOrder = (req, res, next) => {

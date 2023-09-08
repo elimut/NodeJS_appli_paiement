@@ -16,14 +16,6 @@
                 <!-- value: getProduct in controller can get product information/ if in edit mode => vue value to update product -->
                 <input type="text" name="title" id="title" value="<% if (editing === true || hasError === true) { %><%= product.title %><%  } %>">
             </div>
-            <!-- <div class="form-control">
-                <label for="imageUrl">Image</label>
-                <input 
-                    type="text" 
-                    name="imageUrl" 
-                    id="imageUrl" 
-                    value="<% if (editing || hasError) { %><%= product.imageUrl %><%  } %>">
-            </div> -->
             <!-- Add selector file to upload -->
             <div class="form-control">
                 <label for="image">Image</label>

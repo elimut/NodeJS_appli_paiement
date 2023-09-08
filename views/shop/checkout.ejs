@@ -23,18 +23,8 @@
                 <button id="order-btn" class="btn">Commande</button>
                 <!-- to insert local testing key Stripe -->
                 <script>
-                // <!-- <script type="module">
-                    // import { Stripe } from 'stripe';
-                    // const stripe =  new Stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
-                    // var orderBtn = document.getElementById('order-btn');
-                    // orderBtn.addEventListener('click', function() {
-                    //     // after verify by stripe CB's information, user be redirect to checkout
-                    //     stripe.redirectToCheckout({
-                    //         sessionId: '<%= sessionId %>'
-                    //     })
-                    // }) -->
                     var orderBtn = document.getElementById('order-btn');
-                orderBtn.addEventListener('click', function () {
+                    orderBtn.addEventListener('click', function () {
                     // après vérification par les informations de Stripe, l'utilisateur sera redirigé vers la caisse
                     var stripe = Stripe('pk_test_51NkNbrHlGcwFv9WTgEFfRROuPpVLreFkbDJvdU8CMnGMg8L8rVWHgDW4eOeCPImdowz8eMa2dRpkpJagn5XFcO3X002buf8NwF');
                     stripe.redirectToCheckout({

@@ -53,4 +53,5 @@ router.put(
 // admin delete product
 router.delete("/product/:productId", isAuth, adminController.deleteProduct);
 
+// Export to used in app.js with express
 module.exports = router;

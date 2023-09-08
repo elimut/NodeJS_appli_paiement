@@ -1,4 +1,4 @@
-# NodeJs The complete guide (MVC, REST API, GRAPHQL, DENO)
+# NodeJS The complete guide (MVC, REST API, GRAPHQL, DENO)
 
 ## NodeJs
 
@@ -839,7 +839,7 @@ Gère les demandes entrantes.
 
     Req
 
-    Mddleware (req, res, next) => {}
+    Mif multer ddleware (req, res, next) => {}
         next()
     Middleware (req, res, next) => {}
         res.send()
@@ -2357,7 +2357,7 @@ User utilisant un navigateur, et nous avons notre serveur sur lequel notre appli
 
 L'user intéragit avec l'interface avec les vues que nous rendons grâce au moteur de templates ejs, et dans ces vus nous avons des formulaires comme celui pour se logger, nous soumettons une requête à notre serveur NodeJS.
 Cette requête nous oblige à stocker une sorte de données dans le navigateur.
-Nous vpoulons stocker les informations que l'user est connecté afin que lorsque recharge la page, donc techniquement une nouvelle requête est envoyée, nous avons toujours cette information.
+Nous voulons stocker les informations que l'user est connecté afin que lorsque recharge la page, donc techniquement une nouvelle requête est envoyée, nous avons toujours cette information.
 Pour cela, nous renvoyons un **cookie** avec la réponse.
 L'on peut stocker ces informations dans le navigateur, dans le frontend, l'nevironnement avec lequel l'user intéragit et nous pouvons l'envoyer avec des demandes ultérieures pour y inclure le cookie pour envoyer les données que nous avons stockées.
 Les cooies sont donc stockées dans le client side.
@@ -2368,8 +2368,8 @@ Les cooies sont donc stockées dans le client side.
 
 ### Paramètrage d'un cookie
 
-Variable globale stockée dans un fichier supplémentaire, que l'on exporte à partir de ce fichier, et qui sera modifiée.
-La variable survivra aux cycles de demande. Mais elle serait partagée entre toutes les ddemandes, partagée entre tous les user => cookie.
+Variable globale stockée dans un fichier supplémentaire, que l'on exporte à partir de ce fichier, et qui sra modifiée.
+La variable survivra aux cycles de demande. Mais elle serait partagée entre toutes les demandes, partagée entre tous les user => cookie.
 L'on peut stocker des données dans le navigateur d'un seul user, données personnalisées pour cet user sans affecter les autres user, et qui peut être envoyé avec des demandes pour dire par exemple que l'eentification est bonne.
 
     // Get page login /login
@@ -2407,7 +2407,7 @@ Un cookie peut être envoyé à une autre page.
 L'on peut ajouter plusieurs cookies, date d'expiration (sans date il expire quand on ferme le navigateur; Expires=), Secure pour fonctionner seulement avec https, HttpOnly => cela signifie que l'on ne peut pas accèder à la valeur du cookie via JS côté client cela peut être un mécanisme de sécurité car il protège contre attaques de scripts intersites car maintenant côté client js où quelqu'un aurait pu injecter du code malveillant ne peut pas lire la valeur du cookie.
 De façon générale l'on utilise des packages pour gérer les cookies.
 
-### Session?
+### session?
 
 Stocker dans le front les données est une mauvaise idée, nous les stockons alors dans le back end avec une session.
 Une session est une nouvelle contruction.
@@ -2439,7 +2439,7 @@ auth.js controller
     exports.getLogin = (req, res) => {
     // console.log(req.get("Cookie").split("=")[1]);
     //loggedIn=true
-    //split to fetch after =. Extract header of cookie, value oh cookie
+    //split to fetch after =. Extract header of cookie, value of cookie
     // const isLoggedIn = req.get("Cookie").split("=")[1];
     res.render("auth/login", {
         pageTitle: "Se connecter",
@@ -2497,7 +2497,7 @@ npm install --save connect-session-sequelize
 ### Supprimer un cookie
 
 navigation views
-Le cookie persiste mais aucune session ne correpond car supprimée.
+Le cookie persiste mais aucune session ne correspond car supprimée.
 
 ## Ajouter une authentification
 
@@ -2523,7 +2523,7 @@ Création d'un middleware qui sera ajouté sur chaque route.
 
 **Cross-Site Request Forgery**
 
-Il s'agit d'un type d'attaque où les personnes oeuvent abuser des sessions et inciter les user de l'application à exécuter du code malveillant.
+Il s'agit d'un type d'attaque où les personnes peuvent abuser des sessions et inciter les user de l'application à exécuter du code malveillant.
 Un user connecté, qui intéragit avec les vues, et l'on a une session et cookie pour cet user.
 Cet user peut envoyer de l'argent par exemple, l'user est trompé de site, cela peut être fait en envoyant un email, qui peut ressembler à notre propre page.
 Sur ce site il peut y avoir un lien menant à notre site, la page réelle, exécutant une demande là-bas, comme un formulaire de paiement.
@@ -2622,7 +2622,7 @@ check('name input'). retourne un middleware, appelle méthode sur l'objet qui es
 
 Controller auth
 
-Dans routes, l'on collecte les erreurs, le middlexare stockera les éventuelles erreurs dans un objet error, et dans le controller la fonction Result passera par cet objet d'erreurs géré par ce middleware à la demande et sera à son tour collectée dans la const errors qu'on pourra utiliser pour vérifier s'il y a des erreurs.
+Dans routes, l'on collecte les erreurs, le middleware stockera les éventuelles erreurs dans un objet error, et dans le controller la fonction Result passera par cet objet d'erreurs géré par ce middleware à la demande et sera à son tour collectée dans la const errors qu'on pourra utiliser pour vérifier s'il y a des erreurs.
 
 error.array() renvoie un visuel d'un tableau d'objets => views.
 

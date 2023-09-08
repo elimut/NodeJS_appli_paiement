@@ -1,12 +1,16 @@
+// Controller to auth user:
+
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const Sequelize = require("sequelize");
+// Import op to sequelize to comparate in req
 const Op = Sequelize.Op;
 // To fetch error validation on routes
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
+// Use nodemailer to send mail:
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -15,7 +19,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Get page login /login
+// Get page login: /login
 exports.getLogin = (req, res) => {
   let message = req.flash("error");
   if (message.length > 0) {
@@ -26,14 +30,16 @@ exports.getLogin = (req, res) => {
   res.render("auth/login", {
     pageTitle: "Se connecter",
     path: "/login",
-    // user need to be auth to access
+    // false because not auth
     isAuthenticated: false,
     // fetch message of flash in req
     errorMessage: message,
+    // if error to resend mail on the page
     oldInput: { email: "" },
   });
 };
 
+// Get page signup: auth/signup
 exports.getSignup = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) {
@@ -44,12 +50,15 @@ exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
+    // not auht to signup
     isAuthenticated: false,
     errorMessage: message,
+    // to resend mail on page
     oldInput: { email: "" },
   });
 };
 
+// POST signup, to send BDD: /signup
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -95,7 +104,6 @@ exports.postSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/login", {
@@ -120,7 +128,6 @@ exports.postLogin = (req, res, next) => {
         .then((doMatch) => {
           if (doMatch) {
             req.session.user = user;
-            console.log(user);
             req.session.isLoggedIn = true;
             // if redirect to fast and sure to save session in db
             return req.session.save((err) => {

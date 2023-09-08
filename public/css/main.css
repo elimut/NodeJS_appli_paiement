@@ -19,6 +19,10 @@ form {
   display: inline;
 }
 
+.title_principal {
+  text-align: center;
+}
+
 .centered {
   text-align: center;
 }
@@ -187,10 +191,12 @@ form {
 
 .card__image {
   width: 100%;
+  text-align: center;
+
 }
 
 .card__image img {
-  width: 100%;
+  width: 60%;
 }
 
 .card__actions {
