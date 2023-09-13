@@ -1,4 +1,6 @@
 // // Mise en cache PWA
+
+// // staticCacheName est une variable qui stocke le nom du cache statique utilisé pour stocker les ressources de la PWA en cache
 // const staticCacheName = "cache-V1";
 // const assets = [
 //   "/",
@@ -11,7 +13,9 @@
 //   "../images/1693130967361 - OranPamuk.jpg",
 // ];
 
-// // Ajout fichier en cache
+// // Ajout fichier en cache:
+// // event install => mise en cache
+// // self fait référence au service worker lui même
 // self.addEventListener("install", (e) => {
 //   e.waitUntil(
 //     caches.open(staticCacheName).then(async (cache) => {

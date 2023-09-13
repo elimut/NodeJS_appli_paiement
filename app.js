@@ -1,11 +1,12 @@
-// Express server, routes, ...
+// Express server, routes
+
 // Import Express to config route, middleware & create server
 const express = require("express");
 // Create instance of express to use
 const app = express();
 
 // Session:
-// Import middleware session to use session cookie
+// import middleware session to use session cookie
 const session = require("express-session");
 // product constructor fonction store in db, to store session cookie
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
