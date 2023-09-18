@@ -2,9 +2,9 @@
 
 ## NodeJs
 
-Runtime JS = JS langage de programmation utilisé dans le navigateur pour manipuler le DOM, la page, qui a été chargée dans le navigateur, permet d'intéragir avec la page après son chargement, et c'est une ^partie cruciale pour créer des interfaces utilisateur intéractives dans le navigateur.  
+Runtime JS = JS langage de programmation utilisé dans le navigateur pour manipuler le DOM, la page, qui a été chargée dans le navigateur, permet d'intéragir avec la page après son chargement, et c'est une partie cruciale pour créer des interfaces utilisateur intéractives dans le navigateur.  
 NodeJs est une version différente de JS, il est essentiellement contruit sur JS, il y ajoute des fonctionnalités.
-Il prend JS et le place dans un environnenement différent, il permet d'exécuter du JS côté serveur comme un langage de programmation.
+Il prend JS et le place dans un environnement différent, il permet d'exécuter du JS côté serveur comme un langage de programmation.
 
 NodeJs utilise v8 qui est le moteur de Js, qui exécute JS dans le navigateur.
 Le moteur prend le code JS, qui s'exécute dans le navigateur et le compile en code machine car c'est le code qui s'exécute finalement ur l'ordinateur et peut être géré efficacement.
@@ -271,7 +271,7 @@ contraire du spread opérateur:
 
     // destructuring
     const personName2 = ({ nom }) => {
-    // args propriété de l'objt entrant qui en sera extrait
+    // args propriété de l'objet entrant qui en sera extrait
     console.log(nom);
     };
     personName2(person);
@@ -412,7 +412,7 @@ os
     // function rqListener(req, res) {
 
     // }
-    // // écouteru reçoit une demande qui est un message entrant, et renvoie un objet de réponse, que l'on peut utiliser pour renvoyer une réponse à la personne qui a fait cette demande.
+    // // écouteur reçoit une demande qui est un message entrant, et renvoie un objet de réponse, que l'on peut utiliser pour renvoyer une réponse à la personne qui a fait cette demande.
 
     // http.createServer(rqListener);
     // // création serveur. Demande à create de chercher la fonction et l'exécuter pour chaque demande entrante
@@ -1412,7 +1412,7 @@ Promesses ont deux fonctions:
 
 **then** et **catch**.
 Fonctions qui peuvent être enchaînées sur le résultat du code exécuté.
-S'exécutent qur ce que nous rendra la requête, une **promesse** est un objet JS non spécifique à NodeJs, se trouve aussi dans le js du naviq=gateur.
+S'exécutent sur ce que nous rendra la requête, une **promesse** est un objet JS non spécifique à NodeJs, se trouve aussi dans le js du navigateur.
 Cela nous permet de travailler avec du code **asynchrone**.
 Au lieu d'utiliser des rappels, nous utilisons le package mysql2, les promesses permetttent d'écrire du code plus structué.
 Au lieu d'avoir des fonctions anonymes imbriquées comme deuxième argument, l'on a un bloc then qui obtiendra alors la fonction anonyme exécuter.
@@ -1437,6 +1437,7 @@ app.js:
     //   .catch((err) => {
     //     console.log(err);
     //   });
+
 ### Récupèrer les données produits
 
 Travail à partir des models.
@@ -2672,7 +2673,7 @@ Types:
 - Erreurs logiques:
 
 Il y a des erreurs lorsqu'une erreur est levée, une erreur est un objet technique de NodeJs => error is throw.
-Nous avons de soutils que l'on peut utiliser pour tester le code et intercepter les erreurs potentielles afin que nous les gérer.
+Nous avons des outils que l'on peut utiliser pour tester le code et intercepter les erreurs potentielles afin que nous les gérer.
 Pour le code synchrone, ce serait d'essayer de bloquer les blocs **try-catch**, dans le cas du code asynchrone on utilise des **promesses** **then()-catch()**.
 Dans les deux cas, l'on peut soit gérer directement l'erreur sinon l'on peut utiliser un mécanisme d'express, un middleware spécial de gestion d'erreurs (détection d'erreurs et envoie d'un message d'erreur à l'user)
 
@@ -2681,7 +2682,7 @@ Il a un objet d'erreur intégré que l'on peut lancer, c'est une focntionnalité
 Il peut y avoir des scénarios où l'erreur ne peut être levée, mais nous ne pouvons pas continuer le code.
 Dans ce cas, l'on décide de soit lancer une erreur (throw errror), soit gérer directement l'erreur qui n'est pas une erreur technique.
 
-Avec try catch l'on peut ontinuer le code, info de l'user que quelque chose s'est mal passé (code synchrone)
+Avec try catch l'on peut continuer le code, info de l'user que quelque chose s'est mal passé (code synchrone)
 Code asynchrone: then catch.
 
 les erreurs hors des promesses, code async, express les détectera et ira directement au middleware de gestion d'erreur.
@@ -2899,7 +2900,7 @@ query params ? après URL, données facultatives.
 Actuellement, la demande était toujours une demande envoyée par notre navigateur lorsque nous lui soumettions un formulaire ou entrions une URL ou cliquions sur un lien, la réponse était toujours soit une redirection ou une nouvelle page HTML.
 Mais parfois, certaines demandes ne se produiront qu'en arrière plan, cela signifie que l'on ne veut pas récupèrer une nouvelle page HTML, seulement échanger des données avec le serveur par exemple.
 
-### Requpetes asynchrones
+### Requêtes asynchrones
 
 L'on a le serveur et notre client, et c'est la configuration actuelle.
 Généralement on envoie une demande, du client au serveur, et l'on obtient une réponse, redirectioon ou page HTML.
